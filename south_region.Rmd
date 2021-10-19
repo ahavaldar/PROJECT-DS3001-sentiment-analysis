@@ -1,0 +1,589 @@
+---
+title: "south_region"
+author: "Teagan Norrgard, trn8cwf"
+date: "10/19/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(tidytext)
+library(ggwordcloud) 
+library(textdata)
+setwd("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab")
+save.image("tidytext.RData")
+library(ggplot2)
+```
+
+
+
+I started by reading in all of the articles I chose. This region only had 4 states in it, so I chose 4 articles from each state, and for each state I used the same newspaper.
+
+```{r}
+
+texas1 <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/texas1.txt")
+texas1<- tibble(texas1)
+texas2 <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/texas2.txt")
+texas2<- tibble(texas2)
+texas3 <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/texas3.txt")
+texas3 <- tibble(texas3)
+texas4 <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/texas4.txt")
+texas4 <- tibble(texas4)
+oklahoma1 <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/oklahoma1.txt")
+oklahoma1 <- tibble(oklahoma1)
+oklahoma2 <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/oklahoma2.txt")
+oklahoma2 <- tibble(oklahoma2)
+oklahoma3 <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/oklahoma3.txt")
+oklahoma3 <- tibble(oklahoma3)
+oklahoma4 <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/oklahoma4.txt")
+oklahoma4 <- tibble(oklahoma4)
+arizona1 <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/arizona1.txt")
+arizona1 <- tibble(arizona1)
+arizona2 <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/arizona2.txt")
+arizona2 <- tibble(arizona2)
+arizona3 <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/arizona3.txt")
+arizona3 <- tibble(arizona3)
+arizona4 <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/arizona4.txt")
+arizona4 <- tibble(arizona4)
+nm1 <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/nm1.txt")
+nm1 <- tibble(nm1)
+nm2 <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/nm2.txt")
+nm2 <- tibble(nm2)
+nm3 <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/nm3.txt")
+nm3 <- tibble(nm3)
+nm4 <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/nm4.txt")
+nm4 <- tibble(nm4)
+```
+
+
+
+Next I made frequency tables of each article, excluding the stop words.
+
+```{r}
+texas1 <- texas1 %>%
+  unnest_tokens(word, texas1)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+texas2 <- texas2 %>%
+  unnest_tokens(word, texas2)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+texas3 <- texas3 %>%
+  unnest_tokens(word, texas3)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+texas4 <- texas4 %>%
+  unnest_tokens(word, texas4)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+oklahoma1 <- oklahoma1 %>%
+  unnest_tokens(word, oklahoma1)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+oklahoma2 <- oklahoma2 %>%
+  unnest_tokens(word, oklahoma2)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+oklahoma3 <- oklahoma3 %>%
+  unnest_tokens(word, oklahoma3)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+oklahoma4 <- oklahoma4 %>%
+  unnest_tokens(word, oklahoma4)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+arizona1 <- arizona1 %>%
+  unnest_tokens(word, arizona1)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+arizona2 <- arizona2 %>%
+  unnest_tokens(word, arizona2)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+arizona3 <- arizona3 %>%
+  unnest_tokens(word, arizona3)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+arizona4 <- arizona4 %>%
+  unnest_tokens(word, arizona4)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+nm1 <- nm1 %>%
+  unnest_tokens(word, nm1)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+nm2 <- nm2 %>%
+  unnest_tokens(word, nm2)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+nm3 <- nm3 %>%
+  unnest_tokens(word, nm3)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+nm4 <- nm4 %>%
+  unnest_tokens(word, nm4)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+```
+
+
+Most of these articles had high frequency words about the economy, and what seemed to economic impacts of climate change. Only a few had words about politics and government, emissions and chemicals, or weather. 
+
+
+
+```{r}
+get_sentiments('afinn')
+get_sentiments('nrc')
+get_sentiments('bing')
+
+texas1_afinn <- texas1 %>%
+  inner_join(get_sentiments("afinn"))
+texas1_nrc <- texas1 %>%
+  inner_join(get_sentiments("nrc"))
+texas1_bing <- texas1 %>%
+  inner_join(get_sentiments("bing"))
+
+texas2_afinn <- texas2 %>%
+  inner_join(get_sentiments("afinn"))
+texas2_nrc <- texas2 %>%
+  inner_join(get_sentiments("nrc"))
+texas2_bing <- texas2 %>%
+  inner_join(get_sentiments("bing"))
+
+texas3_afinn <- texas3 %>%
+  inner_join(get_sentiments("afinn"))
+texas3_nrc <- texas3 %>%
+  inner_join(get_sentiments("nrc"))
+texas3_bing <- texas3 %>%
+  inner_join(get_sentiments("bing"))
+
+texas4_afinn <- texas4 %>%
+  inner_join(get_sentiments("afinn"))
+texas4_nrc <- texas4 %>%
+  inner_join(get_sentiments("nrc"))
+texas4_bing <- texas4 %>%
+  inner_join(get_sentiments("bing"))
+
+table(texas1_bing$sentiment)
+table(texas2_bing$sentiment)
+table(texas3_bing$sentiment)
+table(texas4_bing$sentiment)
+
+table(texas1_nrc$sentiment)
+table(texas2_nrc$sentiment)
+table(texas3_nrc$sentiment)
+table(texas4_nrc$sentiment)
+
+table(texas1_afinn$value)
+table(texas2_afinn$value)
+table(texas3_afinn$value)
+table(texas4_afinn$value)
+```
+
+
+```{r}
+oklahoma1_afinn <- oklahoma1 %>%
+  inner_join(get_sentiments("afinn"))
+oklahoma1_nrc <- oklahoma1 %>%
+  inner_join(get_sentiments("nrc"))
+oklahoma1_bing <- oklahoma1 %>%
+  inner_join(get_sentiments("bing"))
+
+oklahoma2_afinn <- oklahoma2 %>%
+  inner_join(get_sentiments("afinn"))
+oklahoma2_nrc <- oklahoma2 %>%
+  inner_join(get_sentiments("nrc"))
+oklahoma2_bing <- oklahoma2 %>%
+  inner_join(get_sentiments("bing"))
+
+oklahoma3_afinn <- oklahoma3 %>%
+  inner_join(get_sentiments("afinn"))
+oklahoma3_nrc <- oklahoma3 %>%
+  inner_join(get_sentiments("nrc"))
+oklahoma3_bing <- oklahoma3 %>%
+  inner_join(get_sentiments("bing"))
+
+oklahoma4_afinn <- oklahoma4 %>%
+  inner_join(get_sentiments("afinn"))
+oklahoma4_nrc <- oklahoma4 %>%
+  inner_join(get_sentiments("nrc"))
+oklahoma4_bing <- oklahoma4 %>%
+  inner_join(get_sentiments("bing"))
+
+table(oklahoma1_bing$sentiment)
+table(oklahoma2_bing$sentiment)
+table(oklahoma3_bing$sentiment)
+table(oklahoma4_bing$sentiment)
+
+table(oklahoma1_nrc$sentiment)
+table(oklahoma2_nrc$sentiment)
+table(oklahoma3_nrc$sentiment)
+table(oklahoma4_nrc$sentiment)
+
+table(oklahoma1_afinn$value)
+table(oklahoma2_afinn$value)
+table(oklahoma3_afinn$value)
+table(oklahoma4_afinn$value)
+```
+
+
+```{r}
+arizona1_afinn <- arizona1 %>%
+  inner_join(get_sentiments("afinn"))
+arizona1_nrc <- arizona1 %>%
+  inner_join(get_sentiments("nrc"))
+arizona1_bing <- arizona1 %>%
+  inner_join(get_sentiments("bing"))
+
+arizona2_afinn <- arizona2 %>%
+  inner_join(get_sentiments("afinn"))
+arizona2_nrc <- arizona2 %>%
+  inner_join(get_sentiments("nrc"))
+arizona2_bing <- arizona2 %>%
+  inner_join(get_sentiments("bing"))
+
+arizona3_afinn <- arizona3 %>%
+  inner_join(get_sentiments("afinn"))
+arizona3_nrc <- arizona3 %>%
+  inner_join(get_sentiments("nrc"))
+arizona3_bing <- arizona3 %>%
+  inner_join(get_sentiments("bing"))
+
+arizona4_afinn <- arizona4 %>%
+  inner_join(get_sentiments("afinn"))
+arizona4_nrc <- arizona4 %>%
+  inner_join(get_sentiments("nrc"))
+arizona4_bing <- arizona4 %>%
+  inner_join(get_sentiments("bing"))
+
+table(arizona1_bing$sentiment)
+table(arizona2_bing$sentiment)
+table(arizona3_bing$sentiment)
+table(arizona4_bing$sentiment)
+
+table(arizona1_nrc$sentiment)
+table(arizona2_nrc$sentiment)
+table(arizona3_nrc$sentiment)
+table(arizona4_nrc$sentiment)
+
+table(arizona1_afinn$value)
+table(arizona2_afinn$value)
+table(arizona3_afinn$value)
+table(arizona4_afinn$value)
+```
+
+
+```{r}
+nm1_afinn <- nm1 %>%
+  inner_join(get_sentiments("afinn"))
+nm1_nrc <- nm1 %>%
+  inner_join(get_sentiments("nrc"))
+nm1_bing <- nm1 %>%
+  inner_join(get_sentiments("bing"))
+
+nm2_afinn <- nm2 %>%
+  inner_join(get_sentiments("afinn"))
+nm2_nrc <- nm2 %>%
+  inner_join(get_sentiments("nrc"))
+nm2_bing <- nm2 %>%
+  inner_join(get_sentiments("bing"))
+
+nm3_afinn <- nm3 %>%
+  inner_join(get_sentiments("afinn"))
+nm3_nrc <- nm3 %>%
+  inner_join(get_sentiments("nrc"))
+nm3_bing <- nm3 %>%
+  inner_join(get_sentiments("bing"))
+
+nm4_afinn <- nm4 %>%
+  inner_join(get_sentiments("afinn"))
+nm4_nrc <- nm4 %>%
+  inner_join(get_sentiments("nrc"))
+nm4_bing <- nm4 %>%
+  inner_join(get_sentiments("bing"))
+
+table(nm1_bing$sentiment)
+table(nm2_bing$sentiment)
+table(nm3_bing$sentiment)
+table(nm4_bing$sentiment)
+
+table(nm1_nrc$sentiment)
+table(nm2_nrc$sentiment)
+table(nm3_nrc$sentiment)
+table(nm4_nrc$sentiment)
+
+table(nm1_afinn$value)
+table(nm2_afinn$value)
+table(nm3_afinn$value)
+table(nm4_afinn$value)
+```
+
+
+For these tables, I wanted to compare the trends within each state. In the afinn tables, I found Texas to be very right skewed, with much more values in the negative numbers than positive. Oklahoma was the only state with an article that had more positive numbers than negative, and the Arizona and New Mexico ones followed a normal distribution more or less. 
+
+The bing tables showed about the same thing, except there was no article with more postive values than negative, so it is surpising that the one from Oklahoma as mentioned before had higher afinn scores.
+
+
+
+Then I have histograms for the afinn values from each article. I think I was able to understand this data just from the table, and these plots were unnecessary for me.
+
+```{r}
+ggplot(data = texas1_afinn, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("texas1 Sentiment Range")+
+  theme_minimal()
+
+ggplot(data = texas2_afinn, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("texas2 Sentiment Range")+
+  theme_minimal()
+
+ggplot(data = texas3_afinn, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("texas3 Sentiment Range")+
+  theme_minimal()
+
+ggplot(data = texas4_afinn, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("texas4 Sentiment Range")+
+  theme_minimal()
+```
+
+
+
+```{r}
+ggplot(data = oklahoma1_afinn, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("oklahoma1 Sentiment Range")+
+  theme_minimal()
+
+ggplot(data = oklahoma2_afinn, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("oklahoma2 Sentiment Range")+
+  theme_minimal()
+
+ggplot(data = oklahoma3_afinn, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("oklahoma3 Sentiment Range")+
+  theme_minimal()
+
+ggplot(data = oklahoma4_afinn, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("oklahoma4 Sentiment Range")+
+  theme_minimal()
+```
+
+
+
+```{r}
+ggplot(data = arizona1_afinn, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("arizona1 Sentiment Range")+
+  theme_minimal()
+
+ggplot(data = arizona2_afinn, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("arizona2 Sentiment Range")+
+  theme_minimal()
+
+ggplot(data = arizona3_afinn, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("arizona3 Sentiment Range")+
+  theme_minimal()
+
+ggplot(data = arizona4_afinn, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("arizona4 Sentiment Range")+
+  theme_minimal()
+```
+
+
+
+```{r}
+ggplot(data = nm1_afinn, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("nm1 Sentiment Range")+
+  theme_minimal()
+
+ggplot(data = nm2_afinn, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("nm2 Sentiment Range")+
+  theme_minimal()
+
+ggplot(data = nm3_afinn, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("nm3 Sentiment Range")+
+  theme_minimal()
+
+ggplot(data = nm4_afinn, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("nm4 Sentiment Range")+
+  theme_minimal()
+```
+
+
+
+Then I made wordclouds for the frequency tables.
+
+```{r}
+set.seed(42)
+ggplot(texas1[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+ggplot(texas2[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+ggplot(texas3[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+ggplot(texas4[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+
+ggplot(oklahoma1[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+ggplot(oklahoma2[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+ggplot(oklahoma3[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+ggplot(oklahoma4[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+
+ggplot(arizona1[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+ggplot(arizona2[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+ggplot(arizona3[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+ggplot(arizona4[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+
+ggplot(nm1[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+ggplot(nm2[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+ggplot(nm3[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+ggplot(nm4[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+```
+
+
+I'm not sure how much these helped me, as it wasn't easy to compare each wordcloud to the other ones. But I could see any words in each article that appeared many more times than others, since they were printed in a bigger size. It was easier to understand the scale of each word with the wordcloud than the frequency table.
+
+
+
+Now making the tf_idf dataframe.
+
+```{r}
+texas1_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/texas1.txt"))
+texas2_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/texas2.txt"))
+texas3_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/texas3.txt"))
+texas4_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/texas4.txt"))
+oklahoma1_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/oklahoma1.txt"))
+oklahoma2_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/oklahoma2.txt"))
+oklahoma3_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/oklahoma3.txt"))
+oklahoma4_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/oklahoma4.txt"))
+arizona1_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/arizona1.txt"))
+arizona2_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/arizona2.txt"))
+arizona3_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/arizona3.txt"))
+arizona4_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/arizona4.txt"))
+nm1_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/nm1.txt"))
+nm2_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/nm2.txt"))
+nm3_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/nm3.txt"))
+nm4_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/south_region/nm4.txt"))
+
+
+data_prep <- function(x,y,z){
+  i <- as_tibble(t(x))    ## transposing dataset
+  ii <- unite(i,"text",y:z,remove = TRUE,sep = "")
+}
+
+texas1_bag <- data_prep(texas1_raw,'V1','V3')
+texas2_bag <- data_prep(texas2_raw,'V1','V3')
+texas3_bag <- data_prep(texas3_raw,'V1','V3')
+texas4_bag <- data_prep(texas4_raw,'V1','V3')
+oklahoma1_bag <- data_prep(oklahoma1_raw,'V1','V3')
+oklahoma2_bag <- data_prep(oklahoma2_raw,'V1','V3')
+oklahoma3_bag <- data_prep(oklahoma3_raw,'V1','V3')
+oklahoma4_bag <- data_prep(oklahoma4_raw,'V1','V3')
+arizona1_bag <- data_prep(arizona1_raw,'V1','V3')
+arizona2_bag <- data_prep(arizona2_raw,'V1','V3')
+arizona3_bag <- data_prep(arizona3_raw,'V1','V3')
+arizona4_bag <- data_prep(arizona4_raw,'V1','V3')
+nm1_bag <- data_prep(nm1_raw,'V1','V3')
+nm2_bag <- data_prep(nm2_raw,'V1','V3')
+nm3_bag <- data_prep(nm3_raw,'V1','V3')
+nm4_bag <- data_prep(nm4_raw,'V1','V3')
+
+
+titles_south <- c("Is Climate Change Denial Thawing in Texas?",
+            "Industrial Evolution", "High and Dry", "POWER SHIFT", "Climate change talk subtle in state",
+            "Oklahoma faith community to discuss climate and environment", 
+            "Strong tornadoes not linked to climate change, experts say", "Hot or cold?",
+            "Action needed on climate change to protect tourism, agriculture", 
+            "Why global climate change solutions shouldn‘t be government-led",
+            "Climate changes affect everyone, time to act",
+            "Climate-change science proven and certain as dangers to planet grow",
+            "WHAT WOULD DARWIN DO?", "Climate change: Just deal with it",
+            "Fight climate change - for justice and health", "Legislature must act boldly on climate change")
+
+tf_idf_text <- tibble(titles_south,text=t(tibble(texas1_bag,texas2_bag,texas3_bag,texas4_bag,
+                                           oklahoma1_bag, oklahoma2_bag, oklahoma3_bag, oklahoma4_bag,
+                                           arizona1_bag, arizona2_bag, arizona3_bag, arizona4_bag,
+                                           nm1_bag, nm2_bag, nm3_bag, nm4_bag,
+                                           .name_repair = "universal")))
+
+word_count <- tf_idf_text %>%
+  unnest_tokens(word, text) %>%
+  count(titles_south, word, sort = TRUE)
+
+
+total_words <- word_count %>% 
+  group_by(titles_south) %>% 
+  summarize(total = sum(n))
+
+south_words <- left_join(word_count, total_words)
+
+
+south_words <- south_words %>%
+  bind_tf_idf(word, titles_south, n)
+```
+
+
+Some words I found with the highest tf_idf values were "water", "plant", "energy", and "oil". I think this is an interesting difference between words like "education" and "agriculture" from the midwest region I looked at. It seems like the south region is more concerned with the root of the problem and possible solutions, where the midwest region is concerned with affects climate change could have.

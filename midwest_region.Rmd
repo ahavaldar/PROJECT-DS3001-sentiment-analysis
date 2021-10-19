@@ -1,0 +1,442 @@
+---
+title: "midwest_region"
+author: "Teagan Norrgard, trn8cwf"
+date: "10/19/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(tidyverse)
+library(tidytext)
+library(ggwordcloud) 
+library(textdata)
+## setwd("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab")
+## save.image("tidytext.RData")
+library(ggplot2)
+```
+
+
+
+First I started by reading in all of the text files. This region is the mid-west, so I wanted to choose at least 1 article from each state to get a good representation.
+
+```{r}
+
+nd1 <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/nd1.txt")
+nd1 <- tibble(nd1)
+nd2 <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/nd2.txt")
+nd2 <- tibble(nd2)
+illinois <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/illinois.txt")
+illinois <- tibble(illinois)
+indiana <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/indiana.txt")
+indiana <- tibble(indiana)
+kansas <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/kansas.txt")
+kansas <- tibble(kansas)
+wisconsin <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/wisconsin.txt")
+wisconsin <- tibble(wisconsin)
+sd <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/sd.txt")
+sd <- tibble(sd)
+michigan1 <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/michigan1.txt")
+michigan1 <- tibble(michigan1)
+michigan2 <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/michigan2.txt")
+michigan2 <- tibble(michigan2)
+minnesota <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/minnesota.txt")
+minnesota <- tibble(minnesota)
+mo1 <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/mo1.txt")
+mo1 <- tibble(mo1)
+mo2 <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/mo2.txt")
+mo2 <- tibble(mo2)
+nebraska <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/nebraska.txt")
+nebraska <- tibble(nebraska)
+iowa <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/iowa.txt")
+iowa <- tibble(iowa)
+ohio <- read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/ohio.txt")
+ohio <- tibble(ohio)
+```
+
+
+
+Next I made frequency tables for words in the article, excluding stop words
+
+```{r}
+nd1 <- nd1 %>%
+  unnest_tokens(word, nd1)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+nd2 <- nd2 %>%
+  unnest_tokens(word, nd2)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+illinois <- illinois %>%
+  unnest_tokens(word, illinois)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+indiana <- indiana %>%
+  unnest_tokens(word, indiana)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+kansas <- kansas %>%
+  unnest_tokens(word, kansas)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+wisconsin <- wisconsin %>%
+  unnest_tokens(word, wisconsin)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+sd <- sd %>%
+  unnest_tokens(word, sd)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+michigan1 <- michigan1 %>%
+  unnest_tokens(word, michigan1)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+michigan2 <- michigan2 %>%
+  unnest_tokens(word, michigan2)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+minnesota <- minnesota %>%
+  unnest_tokens(word, minnesota)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+mo1 <- mo1 %>%
+  unnest_tokens(word, mo1)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+mo2 <- mo2 %>%
+  unnest_tokens(word, mo2)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+nebraska <- nebraska %>%
+  unnest_tokens(word, nebraska)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+iowa <- iowa %>%
+  unnest_tokens(word, iowa)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+ohio <- ohio %>%
+  unnest_tokens(word, ohio)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+```
+
+
+It was interesting to see the wide range of issues that were at the top of these frequency lists. Some talked a lot about politics and government, others farmland, forrests, and migration, and some talked about floods and other extreme weather.
+
+
+Then I used afinn, nrc, and bing methods to get sentiment values for each word that appeared in the frequency tables.
+
+```{r}
+get_sentiments('afinn')
+get_sentiments('nrc')
+get_sentiments('bing')
+
+nd1_afinn <- nd1 %>%
+  inner_join(get_sentiments("afinn"))
+nd1_nrc <- nd1 %>%
+  inner_join(get_sentiments("nrc"))
+nd1_bing <- nd1 %>%
+  inner_join(get_sentiments("bing"))
+
+nd2_afinn <- nd2 %>%
+  inner_join(get_sentiments("afinn"))
+nd2_nrc <- nd2 %>%
+  inner_join(get_sentiments("nrc"))
+nd2_bing <- nd2 %>%
+  inner_join(get_sentiments("bing"))
+
+illinois_afinn <- illinois %>%
+  inner_join(get_sentiments("afinn"))
+illinois_nrc <- illinois %>%
+  inner_join(get_sentiments("nrc"))
+illinois_bing <- illinois %>%
+  inner_join(get_sentiments("bing"))
+
+indiana_afinn <- indiana %>%
+  inner_join(get_sentiments("afinn"))
+indiana_nrc <- indiana %>%
+  inner_join(get_sentiments("nrc"))
+indiana_bing <- indiana %>%
+  inner_join(get_sentiments("bing"))
+
+iowa_afinn <- iowa %>%
+  inner_join(get_sentiments("afinn"))
+iowa_nrc <- iowa %>%
+  inner_join(get_sentiments("nrc"))
+iowa_bing <- iowa %>%
+  inner_join(get_sentiments("bing"))
+
+kansas_afinn <- kansas %>%
+  inner_join(get_sentiments("afinn"))
+kansas_nrc <- kansas %>%
+  inner_join(get_sentiments("nrc"))
+kansas_bing <- kansas %>%
+  inner_join(get_sentiments("bing"))
+
+michigan1_afinn <- michigan1 %>%
+  inner_join(get_sentiments("afinn"))
+michigan1_nrc <- michigan1 %>%
+  inner_join(get_sentiments("nrc"))
+michigan1_bing <- michigan1 %>%
+  inner_join(get_sentiments("bing"))
+
+michigan2_afinn <- michigan2 %>%
+  inner_join(get_sentiments("afinn"))
+michigan2_nrc <- michigan2 %>%
+  inner_join(get_sentiments("nrc"))
+michigan2_bing <- michigan2 %>%
+  inner_join(get_sentiments("bing"))
+
+minnesota_afinn <- minnesota %>%
+  inner_join(get_sentiments("afinn"))
+minnesota_nrc <- minnesota %>%
+  inner_join(get_sentiments("nrc"))
+minnesota_bing <- minnesota %>%
+  inner_join(get_sentiments("bing"))
+
+mo1_afinn <- mo1 %>%
+  inner_join(get_sentiments("afinn"))
+mo1_nrc <- mo1 %>%
+  inner_join(get_sentiments("nrc"))
+mo1_bing <- mo1 %>%
+  inner_join(get_sentiments("bing"))
+
+mo2_afinn <- mo2 %>%
+  inner_join(get_sentiments("afinn"))
+mo2_nrc <- mo2 %>%
+  inner_join(get_sentiments("nrc"))
+mo2_bing <- mo2 %>%
+  inner_join(get_sentiments("bing"))
+
+nebraska_afinn <- nebraska %>%
+  inner_join(get_sentiments("afinn"))
+nebraska_nrc <- nebraska %>%
+  inner_join(get_sentiments("nrc"))
+nebraska_bing <- nebraska %>%
+  inner_join(get_sentiments("bing"))
+
+ohio_afinn <- ohio %>%
+  inner_join(get_sentiments("afinn"))
+ohio_nrc <- ohio %>%
+  inner_join(get_sentiments("nrc"))
+ohio_bing <- ohio %>%
+  inner_join(get_sentiments("bing"))
+
+sd_afinn <- sd %>%
+  inner_join(get_sentiments("afinn"))
+sd_nrc <- sd %>%
+  inner_join(get_sentiments("nrc"))
+sd_bing <- sd %>%
+  inner_join(get_sentiments("bing"))
+
+wisconsin_afinn <- wisconsin %>%
+  inner_join(get_sentiments("afinn"))
+wisconsin_nrc <- wisconsin %>%
+  inner_join(get_sentiments("nrc"))
+wisconsin_bing <- wisconsin %>%
+  inner_join(get_sentiments("bing"))
+```
+
+
+
+And I made dataframes of these sentiment values.
+
+```{r}
+table(nd1_bing$sentiment)
+table(nd2_bing$sentiment)
+table(illinois_bing$sentiment)
+table(indiana_bing$sentiment)
+table(iowa_bing$sentiment)
+table(kansas_bing$sentiment)
+table(michigan1_bing$sentiment)
+table(michigan2_bing$sentiment)
+table(minnesota_bing$sentiment)
+table(mo1_bing$sentiment)
+table(mo2_bing$sentiment)
+table(nebraska_bing$sentiment)
+table(ohio_bing$sentiment)
+table(sd_bing$sentiment)
+table(wisconsin_bing$sentiment)
+
+table(nd1_nrc$sentiment)
+table(nd2_nrc$sentiment)
+table(illinois_nrc$sentiment)
+table(indiana_nrc$sentiment)
+table(iowa_nrc$sentiment)
+table(kansas_nrc$sentiment)
+table(michigan1_nrc$sentiment)
+table(michigan2_nrc$sentiment)
+table(minnesota_nrc$sentiment)
+table(mo1_nrc$sentiment)
+table(mo2_nrc$sentiment)
+table(nebraska_nrc$sentiment)
+table(ohio_nrc$sentiment)
+table(sd_nrc$sentiment)
+table(wisconsin_nrc$sentiment)
+
+table(nd1_afinn$value)
+table(nd2_afinn$value)
+table(illinois_afinn$value)
+table(indiana_afinn$value)
+table(iowa_afinn$value)
+table(kansas_afinn$value)
+table(michigan1_afinn$value)
+table(michigan2_afinn$value)
+table(minnesota_afinn$value)
+table(mo1_afinn$value)
+table(mo2_afinn$value)
+table(nebraska_afinn$value)
+table(ohio_afinn$value)
+table(sd_afinn$value)
+table(wisconsin_afinn$value)
+```
+
+For the bing tables, words were either given a positive or negative rating. Most of the articles I chose had slightly more negative values than positive ones. The only states with articles that had more positive word ratings were North and South Dakota, Indiana, and Michigan. And the only state with a heavy skew was Minnesota, with 35 negative and only 8 positive.
+
+What surprised me the most about the afinn tables was Michigan. Both articles I chose from Michigan were left skewed with relatively high sentiment values compared to the other articles I chose. Another surprising point I found was that none of the words had a score higher than 3 or lower than 4. I thought that some of the more conservative states I chose from might have higher sentiment values, and the more liberal states would have much lower ones, but they almost all followed a pretty normal distribution. I saw the same pattern in the nrc tables as described with the afinn tables. I decided not to make histograms of the afinn tables since I was able to interpret from the tables themselves.
+
+
+
+Then I made word clouds to look at frequency again.
+
+```{r}
+set.seed(42)
+ggplot(nd1[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+ggplot(nd2[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+
+ggplot(illinois[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+
+ggplot(indiana[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+
+ggplot(iowa[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+
+ggplot(kansas[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+
+ggplot(michigan1[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+
+ggplot(michigan2[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+
+ggplot(minnesota[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+
+ggplot(mo1[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+
+ggplot(mo2[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+
+ggplot(nebraska[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+
+ggplot(ohio[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+
+ggplot(sd[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+
+ggplot(wisconsin[1:50,], aes(label = word, size = n)) +
+  geom_text_wordcloud() + theme_minimal()
+```
+
+
+I don't think I came to any more conclusions from the wordclouds I made than from just looking at the frequency tables. It was easier to see the difference in frequencies within one article given the differing size of the text, but they didn't help much to compare between articles.
+
+
+Now making the tf_idf dataframe.
+
+```{r}
+nd1_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/nd1.txt"))
+nd2_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/nd2.txt"))
+illinois_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/illinois.txt"))
+indiana_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/indiana.txt"))
+kansas_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/kansas.txt"))
+wisconsin_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/wisconsin.txt"))
+sd_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/sd.txt"))
+michigan1_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/michigan1.txt"))
+michigan2_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/michigan2.txt"))
+minnesota_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/minnesota.txt"))
+mo1_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/mo1.txt"))
+mo2_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/mo2.txt"))
+nebraska_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/nebraska.txt"))
+iowa_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/iowa.txt"))
+ohio_raw <- as.tibble(read_lines("/Users/teagannorrgard/Fall2021/DS3001/TextMiningLab/ohio.txt"))
+
+data_prep <- function(x,y,z){
+  i <- as_tibble(t(x))    ## transposing dataset
+  ii <- unite(i,"text",y:z,remove = TRUE,sep = "")
+}
+
+nd1_bag <- data_prep(nd1_raw,'V1','V3')
+nd2_bag <- data_prep(nd2_raw,'V1','V3')
+illinois_bag <- data_prep(illinois_raw,'V1','V3')
+indiana_bag <- data_prep(indiana_raw,'V1','V3')
+kansas_bag <- data_prep(kansas_raw,'V1','V3')
+wisconsin_bag <- data_prep(wisconsin_raw,'V1','V3')
+sd_bag <- data_prep(sd_raw,'V1','V3')
+michigan1_bag <- data_prep(michigan1_raw,'V1','V3')
+michigan2_bag <- data_prep(michigan2_raw,'V1','V3')
+minnesota_bag <- data_prep(minnesota_raw,'V1','V3')
+mo1_bag <- data_prep(mo1_raw,'V1','V3')
+mo2_bag <- data_prep(mo2_raw,'V1','V3')
+nebraska_bag <- data_prep(nebraska_raw,'V1','V3')
+iowa_bag <- data_prep(iowa_raw,'V1','V3')
+ohio_bag <- data_prep(ohio_raw,'V1','V3')
+
+titles_midwest <- c("Climate change, logging collide", "Organic tackles 'existential threat' of climate change",
+            "Climate change is real, and it requires us to act", "Bipartisan action, leadership on climate change",
+            "Climate change could force 200 million to move", "K-State experts outline climate change effects on Kansas",
+            "Climate change: call it what you will, farmers face new challenges.",
+            "Climate change: when local is global.", "Grim forecast in Minnesota climate adaptation report",
+            "On St. Louis visit, US secretary of agriculture talks climate change", 
+            "Report: Climate change could increase migration", "Analysis says climate rules to slow growth",
+            "Scientists offer new estimate for how people altered planet",
+            "South Dakota Board of Education passes science standards",
+            "WANTED: LEADERS WILLING TO FACE CLIMATE CHANGE")
+
+tf_idf_text <- tibble(titles_midwest,text=t(tibble(nd1_bag, nd2_bag, illinois_bag, indiana_bag, iowa_bag, 
+                                           kansas_bag, michigan1_bag, michigan2_bag, minnesota_bag,
+                                           mo1_bag, mo2_bag, nebraska_bag, ohio_bag, sd_bag, wisconsin_bag,
+                                           .name_repair = "universal")))
+
+word_count <- tf_idf_text %>%
+  unnest_tokens(word, text) %>%
+  count(titles_midwest, word, sort = TRUE)
+
+
+total_words <- word_count %>% 
+  group_by(titles_midwest) %>% 
+  summarize(total = sum(n))
+
+midwest_words <- left_join(word_count, total_words)
+
+midwest_words <- midwest_words %>%
+  bind_tf_idf(word, titles_midwest, n)
+```
+
+Some words I found with the highest tf_idf value were "forest", "agriculture", "education", and "organic"
+
+
