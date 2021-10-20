@@ -1,0 +1,418 @@
+---
+title: "Week08lab_tidytext"
+author: "Akhil Havaldar"
+date: "10/20/2021"
+output:
+  html_document:
+    toc: TRUE
+    theme: cerulean
+    toc_float: TRUE
+editor_options: 
+  chunk_output_type: console
+---
+```{r, include=FALSE}
+# Loading in the libraries
+library(tidyverse)
+library(tidytext)
+library(ggwordcloud)
+library(gutenbergr)
+library(textdata)
+```
+### Region 1: Pacific
+```{r,include=FALSE}
+## REGION 1: PACIFIC
+## CORPUS 1: LA TIMES: 6 ARTICLES
+
+latimes <- as.tibble(read_lines("LATIMES.txt"))
+latimes <- latimes[1:121,]
+
+
+latimes <- latimes %>%
+  unnest_tokens(word, value)%>%
+  anti_join(stop_words)%>%
+  count(word, sort=TRUE)
+
+View(latimes)
+
+## CORPUS 2: Alaska Dispatch News: 6 Articles
+alaska <- as.tibble(read_lines("alaska.txt"))
+alaska <- alaska[2:90,]
+
+
+alaska <- alaska %>%
+  unnest_tokens(word, value)%>%
+  anti_join(stop_words)%>%
+  count(word, sort=TRUE)
+
+View(alaska)
+
+## CORPUS 3: The Spokesman-Review: 6 Articles
+wash <- as.tibble(read_lines("washington.txt"))
+wash <- wash[2:120,]
+
+
+wash <- wash %>%
+  unnest_tokens(word, value)%>%
+  anti_join(stop_words)%>%
+  count(word, sort=TRUE)
+
+View(wash)
+```
+
+```{r, include=FALSE}
+## SENTIMENT ANALYSIS FOR EACH OF THE CORPUSES
+## CORPUS 1
+latimes_sentiment_affin <- latimes %>%
+  inner_join(get_sentiments("afinn"))
+
+latimes_sentiment_nrc <- latimes %>%
+  inner_join(get_sentiments("nrc"))
+
+latimes_sentiment_bing <- latimes %>%
+  inner_join(get_sentiments("bing"))
+
+## CORPUS 2
+alaska_sentiment_affin <- alaska %>%
+  inner_join(get_sentiments("afinn"))
+
+alaska_sentiment_nrc <- alaska %>%
+  inner_join(get_sentiments("nrc"))
+
+alaska_sentiment_bing <- alaska %>%
+  inner_join(get_sentiments("bing"))
+
+## CORPUS 3
+wash_sentiment_affin <- wash %>%
+  inner_join(get_sentiments("afinn"))
+
+wash_sentiment_nrc <- wash %>%
+  inner_join(get_sentiments("nrc"))
+
+wash_sentiment_bing <- wash %>%
+  inner_join(get_sentiments("bing"))
+
+```
+#### Analysis of Sentiment in Context
+The Bing sentiment that we see here (in the order of LAtimes, Alaska Dispatch, The Spokesman-Review) tells us about the negativity and positivity of the newspapers. The LATimes has a very negative sentiment, which makes sense since LA is a major metropolitan city and can have multiple viewpoints on the same issue. The Alaska Dispatch has a very even split which is quite surprising as I would expect more negative things associated with climate change in Alaska since it is close to the arctic. The Spokesman-Review also has a very negative sentiment, which is consistent with the theme of LA. 
+```{r, echo=FALSE}
+## ANALYSIS OF THE SENTIMENT IN CONTEXT
+### GIVE ANALYSIS HERE
+table(latimes_sentiment_bing$sentiment)
+table(alaska_sentiment_bing$sentiment)
+table(wash_sentiment_bing$sentiment)
+```
+
+From the NRC sentiment (in the order of LAtimes, Alaska Dispatch, The Spokesman-Review) we can see the same pattern of sentiment as with the Bing sentiment. LATimes has a lot of words associated with fear, whereas the Alaska Dispatch has a pretty even spread among the sentiment words. The Spokesman-Review had a lot of words associated with trust, but apart of that it was pretty evenly spread out.  
+```{r, echo=FALSE}
+### GIVE ANALYSIS HERE
+table(latimes_sentiment_nrc$sentiment)
+table(alaska_sentiment_nrc$sentiment)
+table(wash_sentiment_nrc$sentiment)
+```
+
+From the histograms we can see the distributions match up with the Bing and NRC sentiments. LATimes and The Spokesman-Review have a more negative distribution, while the Alaska Dispatch has a more neutral distribution.
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+### GIVE ANALYSIS HERE
+ggplot(data = latimes_sentiment_affin, 
+       aes(x=value)
+)+
+  geom_histogram()+
+  ggtitle("LATimes Sentiment Range")+
+  theme_minimal()
+
+
+ggplot(data = alaska_sentiment_affin, 
+       aes(x=value)
+)+
+  geom_histogram()+
+  ggtitle("Alaska Dispatch News Sentiment Range")+
+  theme_minimal()
+
+
+ggplot(data = wash_sentiment_affin, 
+       aes(x=value)
+)+
+  geom_histogram()+
+  ggtitle("The Spokesman-Review Sentiment Range")+
+  theme_minimal()
+```
+
+From the word clouds (in the order of LAtimes, Alaska Dispatch, The Spokesman-Review), we can just see which words appear the most in each newspaper.
+```{r, echo=FALSE}
+### GIVE ANALYSIS HERE
+
+set.seed(42)
+ggplot(latimes[1:50,], aes(label = word, size = n)
+) +
+  geom_text_wordcloud() +
+  theme_minimal()
+
+ggplot(alaska[1:50,], aes(label = word, size = n)
+) +
+  geom_text_wordcloud() +
+  theme_minimal()
+
+ggplot(wash[1:50,], aes(label = word, size = n)
+) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+#### Analysis of TF-IDF
+```{r, include=FALSE}
+latimes_raw <- as.tibble(read_lines("LATIMES.txt"))
+latimes_raw <- latimes_raw[1:121,]
+
+alaska_raw <- as.tibble(read_lines("alaska.txt"))
+alaska_raw <- alaska_raw[2:90,]
+
+wash_raw <- as.tibble(read_lines("washington.txt"))
+wash_raw <- wash_raw[2:120,]
+
+### Transposing Function
+data_prep <- function(x,y,z){
+  i <- as_tibble(t(x))
+  ii <- unite(i,"text",y:z,remove = TRUE,sep = "")
+}
+
+latimes_bag <- data_prep(latimes_raw, "V1", "V121")
+alaska_bag <- data_prep(alaska_raw, "V1", "V89")
+wash_bag <- data_prep(wash_raw, "V1", "V119")
+
+newspapers <- c("LATimes","Alaska Dispatch News","The Spokesman-Review")
+
+tf_idf_text <- tibble(newspapers,text=t(tibble(latimes_bag,
+                                              alaska_bag,wash_bag,
+                                              .name_repair = "universal")))
+View(tf_idf_text)
+```
+
+```{r, include=FALSE}
+word_count <- tf_idf_text %>%
+  unnest_tokens(word, text) %>%
+  count(newspapers, word, sort = TRUE)
+
+
+total_words <- word_count %>% 
+  group_by(newspapers) %>% 
+  summarize(total = sum(n))
+
+newspaper_words <- left_join(word_count, total_words)
+View(newspaper_words)
+
+newspaper_words <- newspaper_words %>%
+  bind_tf_idf(word, newspapers, n)
+```
+
+From the TF-IDF table the first 10 rows don't tell us much. But after deeper analysis words like "community", "burn", and "challenge" have a relatively high tf-idf. One surprising thing is that many of the words are not shared across the newspapers which can make the analysis of the region harder. 
+```{r, echo=FALSE}
+newspaper_words <- newspaper_words[order(newspaper_words$idf, decreasing = TRUE),]  
+(newspaper_words)
+```
+
+#### Analysis of Overall Data
+After looking through the analysis of the data, I can conclude that the Pacific region has a relatively negative feeling towards climate change, with a lot of the newspapers insinuating fear in their articles. From this result, the next steps would be figuring out how the people in the Pacific fear climate change. Are they fearful because they think it is a government scam or are they fearful because climate change is real and harmful? I would say the latter due to the political affiliation in the region. Once this information is obtained, it would be best to start implementing climate change counter measures in these areas. If the people are fearful of it, they should be open to change and should be working to help solve the problem. Another step would be to actively advocate for change at the government level. Only with legislation can big businesses be controlled and be held accountable for climate change. 
+
+### Region 2: Rocky Mountain
+```{r,include=FALSE}
+## REGION 2: ROCKY MOUNTAIN REGION
+## CORPUS 1: Idaho Falls Post Register: 6 ARTICLES
+
+idaho <- as.tibble(read_lines("idaho.txt"))
+idaho <- idaho[2:198,]
+
+
+idaho <- idaho %>%
+  unnest_tokens(word, value)%>%
+  anti_join(stop_words)%>%
+  count(word, sort=TRUE)
+
+View(idaho)
+
+## CORPUS 2: The Salt Lake Tribune: 6 Articles
+utah <- as.tibble(read_lines("utah.txt"))
+utah <- utah[2:123,]
+
+
+utah <- utah %>%
+  unnest_tokens(word, value)%>%
+  anti_join(stop_words)%>%
+  count(word, sort=TRUE)
+
+View(utah)
+
+## CORPUS 3: The Wyoming Tribune: 6 Articles
+wyoming <- as.tibble(read_lines("wyoming.txt"))
+wyoming <- wyoming[1:90,]
+
+
+wyoming <- wyoming %>%
+  unnest_tokens(word, value)%>%
+  anti_join(stop_words)%>%
+  count(word, sort=TRUE)
+
+View(wyoming)
+```
+
+```{r, include=FALSE}
+## SENTIMENT ANALYSIS FOR EACH OF THE CORPUSES
+## CORPUS 1
+idaho_sentiment_affin <- idaho %>%
+  inner_join(get_sentiments("afinn"))
+
+idaho_sentiment_nrc<- idaho %>%
+  inner_join(get_sentiments("nrc"))
+
+idaho_sentiment_bing<- idaho %>%
+  inner_join(get_sentiments("bing"))
+
+view(idaho_sentiment_affin)
+view(idaho_sentiment_nrc)
+view(idaho_sentiment_bing)
+
+## CORPUS 2
+utah_sentiment_affin <- utah %>%
+  inner_join(get_sentiments("afinn"))
+
+utah_sentiment_nrc <- utah %>%
+  inner_join(get_sentiments("nrc"))
+
+utah_sentiment_bing <- utah %>%
+  inner_join(get_sentiments("bing"))
+
+view(utah_sentiment_affin)
+view(utah_sentiment_nrc)
+view(utah_sentiment_bing)
+
+## CORPUS 3
+wyoming_sentiment_affin <- wyoming %>%
+  inner_join(get_sentiments("afinn"))
+
+wyoming_sentiment_nrc <- wyoming %>%
+  inner_join(get_sentiments("nrc"))
+
+wyoming_sentiment_bing <- wyoming %>%
+  inner_join(get_sentiments("bing"))
+
+```
+#### Analysis of Sentiment in Context
+The Bing sentiment that we see here (in the order of Idaho Falls Post Register, The Salt Lake Tribune, The Wyoming Tribune) tells us about the negativity and positivity of the newspapers. The Idaho Falls has a majority negative sentiment, which, with all the natural landmarks, makes sense. The Salt Lake Tribune and The Wyoming Tribune also have a majority negative split, but The Wyoming Tribune could be considered more neutral.
+```{r, echo=FALSE}
+## ANALYSIS OF THE SENTIMENT IN CONTEXT
+### GIVE ANALYSIS HERE
+table(idaho_sentiment_bing$sentiment)
+table(utah_sentiment_bing$sentiment)
+table(wyoming_sentiment_bing$sentiment)
+```
+
+From the NRC sentiment (in the order of Idaho Falls Post Register, The Salt Lake Tribune, The Wyoming Tribune) we can see the same pattern of sentiment as with the Bing sentiment. All three newspapers have a very strong association with trust, but apart from that are spread out evenly. 
+```{r, echo=FALSE}
+### GIVE ANALYSIS HERE
+table(idaho_sentiment_nrc
+    $sentiment)
+table(utah_sentiment_nrc$sentiment)
+table(wyoming_sentiment_nrc$sentiment)
+```
+
+From the histograms we can see the distributions match up with the Bing and NRC sentiments. All three newspapers have a relatively similar, even distribution.
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+### GIVE ANALYSIS HERE
+ggplot(data = idaho_sentiment_affin, 
+       aes(x=value)
+)+
+  geom_histogram()+
+  ggtitle("Idaho Falls Post Register Sentiment Range")+
+  theme_minimal()
+
+
+ggplot(data = utah_sentiment_affin, 
+       aes(x=value)
+)+
+  geom_histogram()+
+  ggtitle("The Salt Lake Tribune Sentiment Range")+
+  theme_minimal()
+
+
+ggplot(data = wyoming_sentiment_affin, 
+       aes(x=value)
+)+
+  geom_histogram()+
+  ggtitle("The Wyoming Tribune Sentiment Range")+
+  theme_minimal()
+```
+
+From the word clouds (in the order of Idaho Falls Post Register, The Salt Lake Tribune, The Wyoming Tribune), we can just see which words appear the most in each newspaper.
+```{r, echo=FALSE}
+### GIVE ANALYSIS HERE
+
+set.seed(42)
+ggplot(idaho[1:50,], aes(label = word, size = n)
+) +
+  geom_text_wordcloud() +
+  theme_minimal()
+
+ggplot(utah[1:50,], aes(label = word, size = n)
+) +
+  geom_text_wordcloud() +
+  theme_minimal()
+
+ggplot(wyoming[1:50,], aes(label = word, size = n)
+) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+#### Analysis of TF-IDF
+```{r, include=FALSE}
+idaho_raw <- as.tibble(read_lines("idaho.txt"))
+idaho_raw <- idaho_raw[2:198,]
+
+utah_raw <- as.tibble(read_lines("utah.txt"))
+utah_raw <- utah_raw[2:123,]
+
+wyoming_raw <- as.tibble(read_lines("wyoming.txt"))
+wyoming_raw <- wyoming_raw[1:90,]
+
+### Transposing Function
+data_prep <- function(x,y,z){
+  i <- as_tibble(t(x))
+  ii <- unite(i,"text",y:z,remove = TRUE,sep = "")
+}
+
+idaho_bag <- data_prep(idaho_raw, "V1", "V197")
+utah_bag <- data_prep(utah_raw, "V1", "V122")
+wyoming_bag <- data_prep(wyoming_raw, "V1", "V90")
+
+newspapers <- c("Idaho Falls Post Register","The Salt Lake Tribune","The Wyoming Tribune")
+
+tf_idf_text <- tibble(newspapers,text=t(tibble(idaho_bag,
+                                               utah_bag,wyoming_bag,
+                                               .name_repair = "universal")))
+View(tf_idf_text)
+```
+
+```{r, include=FALSE}
+word_count <- tf_idf_text %>%
+  unnest_tokens(word, text) %>%
+  count(newspapers, word, sort = TRUE)
+
+
+total_words <- word_count %>% 
+  group_by(newspapers) %>% 
+  summarize(total = sum(n))
+
+newspaper_words <- left_join(word_count, total_words)
+View(newspaper_words)
+
+newspaper_words <- newspaper_words %>%
+  bind_tf_idf(word, newspapers, n)
+```
+
+From the TF-IDF table the first 10 rows don't tell us much. But after deeper analysis words like "adapting" and "extremes" have a relatively high tf-idf.
+```{r, echo=FALSE}
+newspaper_words <- newspaper_words[order(newspaper_words$idf, decreasing = TRUE),]  
+(newspaper_words)
+```
+
+#### Analysis of Overall Data
+After running the initial sentiment analysis there seems to be a negative feeling towards climate change. However, after looking at the graphs and more sentiment analysis, there seems to be a feeling of trust and a relatively spread out distribution. This tells me there is not enough alarm in the Rocky Mountain region about climate change. The next steps should be to raise awareness about climate change in this region. Advertisements, political advocacy, and taxes are a few ways to do so. By showing the people the problems caused by climate change (and by taxing them a few dollars), people should start to feel more negative towards the topic, making change a greater possibility. 
