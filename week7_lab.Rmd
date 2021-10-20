@@ -17,7 +17,7 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 ```{r}
 library(tidyverse)
 library(tidytext)
-library(ggwordcloud)
+library(ggwordcloud) 
 library(gutenbergr)
 library(textdata)
 library(readtext)
