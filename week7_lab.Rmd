@@ -1,0 +1,2115 @@
+---
+title: "Data Science Sentimental Text Lab"
+name: Ronica Peraka
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Ronica Peraka
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+```{r}
+library(tidyverse)
+library(tidytext)
+library(ggwordcloud)
+library(gutenbergr)
+library(textdata)
+library(readtext)
+```
+
+# Northeast Region of the US
+
+## Article 1: ‘Adapt or Die,’ U.K. Environment Agency Warns on Climate Change
+Newspaper: The New York Times
+
+```{r}
+NEarticle1 <- read_lines("07_text_mining/Adapt-or-Die.txt") #this will load and read the file into R
+NEarticle1 <- tibble(NEarticle1) #turns the file into a dataframe
+
+NEarticle1$NEarticle1 <- as.character(NEarticle1$NEarticle1)
+
+NEarticle1 <- NEarticle1 %>%
+  unnest_tokens(word, NEarticle1)%>%    ##separates each word of 'text' in a variable 'word' using spaces
+  anti_join(stop_words)%>%    #removes articles, such as 'the', that don't show additional meaning to the text
+  count(word, sort=TRUE)    #portrays how many times each word appears
+
+#View(NEarticle1)
+
+#visual way to see top recurring words
+ggplot(
+  data = NEarticle1[1:20,],            #I chose to show the top 20 words for readability in graph
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+NEarticle1_affin <- NEarticle1 %>%    
+  inner_join(get_sentiments("afinn")) #using a inner join to match words and add the sentiment variable
+
+NEarticle1_nrc <- NEarticle1 %>%
+  inner_join(get_sentiments("nrc"))   #evaluates for tone of words
+
+NEarticle1_bing <- NEarticle1 %>%
+  inner_join(get_sentiments("bing"))  #positive and negative
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(NEarticle1_bing$sentiment) #much more negative
+
+table(NEarticle1_nrc$sentiment)
+
+#View(NEarticle1_affin)
+
+#shows the commonality of the values of the words
+ggplot(data = NEarticle1_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("NE Article 1 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(NEarticle1[1:50,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+## Article: Yes, Blame Climate Change for the Weather
+Newspaper: The New York Times
+
+```{r}
+NEarticle2 <- read_lines("07_text_mining/Blame Climate Change for the Weather.txt")
+
+NEarticle2 <- tibble(NEarticle2)
+#View(NEarticle2)
+
+NEarticle2$NEarticle2 <- as.character(NEarticle2$NEarticle2)
+
+NEarticle2 <- NEarticle2 %>%
+  unnest_tokens(word, NEarticle2)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(NEarticle2)
+
+ggplot(
+  data = NEarticle2[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+NEarticle2_affin <- NEarticle2 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+NEarticle2_nrc <- NEarticle2 %>%
+  inner_join(get_sentiments("nrc"))
+
+NEarticle2_bing <- NEarticle2 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(NEarticle2_bing$sentiment) #much more positive
+
+table(NEarticle2_nrc$sentiment)
+
+#View(NEarticle2_affin)
+
+ggplot(data = NEarticle2_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("NE Article 2 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(NEarticle2[1:50,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+## Article: Climate Change Is Destroying My Country. The Nations Causing It Must Help.; The Climate Issue
+Newspaper: The New York Times
+
+```{r}
+NEarticle3 <- read_lines("07_text_mining/Destroying-My-Country.txt")
+
+NEarticle3 <- tibble(NEarticle3)
+#View(NEarticle3)
+
+NEarticle3$NEarticle3 <- as.character(NEarticle3$NEarticle3)
+
+NEarticle3 <- NEarticle3 %>%
+  unnest_tokens(word, NEarticle3)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(NEarticle3)
+
+ggplot(
+  data = NEarticle3[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+NEarticle3_affin <- NEarticle3 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+NEarticle3_nrc <- NEarticle3 %>%
+  inner_join(get_sentiments("nrc"))
+
+NEarticle3_bing <- NEarticle3 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(NEarticle3_bing$sentiment) #much more positive
+
+table(NEarticle3_nrc$sentiment)
+
+#View(NEarticle3_affin)
+
+ggplot(data = NEarticle3_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("NE Article 3 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(NEarticle3[1:50,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article: Climate change: England must 'adapt or die,' agency warns
+Newspaper: The Associated Press
+
+```{r}
+NEarticle4 <- read_lines("07_text_mining/England must.txt")
+
+NEarticle4 <- tibble(NEarticle4)
+#View(NEarticle4)
+
+NEarticle4$NEarticle4 <- as.character(NEarticle4$NEarticle4)
+
+NEarticle4 <- NEarticle4 %>%
+  unnest_tokens(word, NEarticle4)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(NEarticle4)
+
+ggplot(
+  data = NEarticle4[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+NEarticle4_affin <- NEarticle4 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+NEarticle4_nrc <- NEarticle4 %>%
+  inner_join(get_sentiments("nrc"))
+
+NEarticle4_bing <- NEarticle4 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(NEarticle4_bing$sentiment) #much more positive
+
+table(NEarticle4_nrc$sentiment)
+
+#View(NEarticle4_affin)
+
+ggplot(data = NEarticle4_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 4 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(NEarticle4[1:35,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article: Fossil-Fuel Use May Peak Soon, but Perils of Climate Change Still Loom
+Newspaper: The New York Times
+
+```{r}
+NEarticle5 <- read_lines("07_text_mining/Fossil-Fuel-Peak.txt")
+
+NEarticle5 <- tibble(NEarticle5)
+#View(NEarticle5)
+
+NEarticle5$NEarticle5 <- as.character(NEarticle5$NEarticle5)
+
+NEarticle5 <- NEarticle5 %>%
+  unnest_tokens(word, NEarticle5)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(NEarticle5)
+
+ggplot(
+  data = NEarticle5[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+NEarticle5_affin <- NEarticle5 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+NEarticle5_nrc <- NEarticle5 %>%
+  inner_join(get_sentiments("nrc"))
+
+NEarticle5_bing <- NEarticle5 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(NEarticle5_bing$sentiment) #much more positive
+
+table(NEarticle5_nrc$sentiment)
+
+#View(NEarticle5_affin)
+
+ggplot(data = NEarticle5_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 5 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(NEarticle5[1:35,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article: Google bans ads on content, including YouTube videos, with false claims about climate change.
+Newspaper: The New York Times
+
+```{r}
+NEarticle6 <- read_lines("07_text_mining/Google bans ads.txt")
+
+NEarticle6 <- tibble(NEarticle6)
+#View(NEarticle6)
+
+NEarticle6$NEarticle6 <- as.character(NEarticle6$NEarticle6)
+
+NEarticle6 <- NEarticle6 %>%
+  unnest_tokens(word, NEarticle6)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(NEarticle6)
+
+ggplot(
+  data = NEarticle6[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+NEarticle6_affin <- NEarticle6 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+NEarticle6_nrc <- NEarticle6 %>%
+  inner_join(get_sentiments("nrc"))
+
+NEarticle6_bing <- NEarticle6 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(NEarticle6_bing$sentiment) #much more positive
+
+table(NEarticle6_nrc$sentiment)
+
+#View(NEarticle6_affin)
+
+ggplot(data = NEarticle6_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 6 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(NEarticle6[1:50,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article: How the Animal World Is Adapting to Climate Change; Nonfiction
+Newspaper: The New York Times
+
+```{r}
+NEarticle7 <- read_lines("07_text_mining/How the Animal World Is Adapting to Climate Change_ Non.txt")
+
+NEarticle7 <- tibble(NEarticle7)
+#View(NEarticle7)
+
+NEarticle7$NEarticle7 <- as.character(NEarticle7$NEarticle7)
+
+NEarticle7 <- NEarticle7 %>%
+  unnest_tokens(word, NEarticle7)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(NEarticle7)
+
+ggplot(
+  data = NEarticle7[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+NEarticle7_affin <- NEarticle7 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+NEarticle7_nrc <- NEarticle7 %>%
+  inner_join(get_sentiments("nrc"))
+
+NEarticle7_bing <- NEarticle7 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(NEarticle7_bing$sentiment) #much more positive
+
+table(NEarticle7_nrc$sentiment)
+
+#View(NEarticle7_affin)
+
+ggplot(data = NEarticle7_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 7 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(NEarticle7[1:50,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article: Looking out for number 2; Farmer has a manure solution for fighting climate change
+Newspaper: The Philadelphia Daily News
+
+```{r}
+NEarticle8 <- read_lines("07_text_mining/Looking out for number 2_ Farmer has a manure solution.txt")
+
+NEarticle8 <- tibble(NEarticle8)
+#View(NEarticle8)
+
+NEarticle8$NEarticle8 <- as.character(NEarticle8$NEarticle8)
+
+NEarticle8 <- NEarticle8 %>%
+  unnest_tokens(word, NEarticle8)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(NEarticle8)
+
+ggplot(
+  data = NEarticle8[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+NEarticle8_affin <- NEarticle8 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+NEarticle8_nrc <- NEarticle8 %>%
+  inner_join(get_sentiments("nrc"))
+
+NEarticle8_bing <- NEarticle8 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(NEarticle8_bing$sentiment) #much more positive
+
+table(NEarticle8_nrc$sentiment)
+
+#View(NEarticle8_affin)
+
+ggplot(data = NEarticle8_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 8 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(NEarticle8[1:50,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article: Potsdam town and village recognized for climate change efforts
+Newspaper: The New York Times
+
+```{r}
+NEarticle9 <- read_lines("07_text_mining/Potsdam town and village recognized for climate change.txt")
+
+NEarticle9 <- tibble(NEarticle9)
+#View(NEarticle9)
+
+NEarticle9$NEarticle9 <- as.character(NEarticle9$NEarticle9)
+
+NEarticle9 <- NEarticle9 %>%
+  unnest_tokens(word, NEarticle9)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(NEarticle9)
+
+ggplot(
+  data = NEarticle9[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+NEarticle9_affin <- NEarticle9 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+NEarticle9_nrc <- NEarticle9 %>%
+  inner_join(get_sentiments("nrc"))
+
+NEarticle9_bing <- NEarticle9 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(NEarticle9_bing$sentiment) #much more positive
+
+table(NEarticle9_nrc$sentiment)
+
+#View(NEarticle9_affin)
+
+ggplot(data = NEarticle9_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 9 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(NEarticle9[1:50,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article: Share the Cost of Climate Change
+Newspaper: The New York Times
+
+```{r}
+NEarticle10 <- read_lines("07_text_mining/Share-the-Cost-of-Climate-Change.txt")
+
+NEarticle10 <- tibble(NEarticle10)
+#View(NEarticle10)
+
+NEarticle10$NEarticle10 <- as.character(NEarticle10$NEarticle10)
+
+NEarticle10 <- NEarticle10 %>%
+  unnest_tokens(word, NEarticle10)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(NEarticle10)
+
+ggplot(
+  data = NEarticle10[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+NEarticle10_affin <- NEarticle10 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+NEarticle10_nrc <- NEarticle10 %>%
+  inner_join(get_sentiments("nrc"))
+
+NEarticle10_bing <- NEarticle10 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(NEarticle10_bing$sentiment) #much more positive
+
+table(NEarticle10_nrc$sentiment)
+
+#View(NEarticle10_affin)
+
+ggplot(data = NEarticle10_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 10 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(NEarticle10[1:20,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article: Small islands caught between tourism economy, climate change
+Newspaper: The Associated Press
+
+```{r}
+NEarticle11 <- read_lines("07_text_mining/Small islands.txt")
+
+NEarticle11 <- tibble(NEarticle11)
+#View(NEarticle11)
+
+NEarticle11$NEarticle11 <- as.character(NEarticle11$NEarticle11)
+
+NEarticle11 <- NEarticle11 %>%
+  unnest_tokens(word, NEarticle11)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(NEarticle11)
+
+ggplot(
+  data = NEarticle11[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+NEarticle11_affin <- NEarticle11 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+NEarticle11_nrc <- NEarticle11 %>%
+  inner_join(get_sentiments("nrc"))
+
+NEarticle11_bing <- NEarticle11 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(NEarticle11_bing$sentiment) #much more positive
+
+table(NEarticle11_nrc$sentiment)
+
+#View(NEarticle11_affin)
+
+ggplot(data = NEarticle11_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 11 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(NEarticle11[1:50,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article: The Latest: EPA chief mum on Trump's beliefs on climate
+Newspaper: The Associated Press
+
+```{r}
+NEarticle12 <- read_lines("07_text_mining/The Latest_ EPA.txt")
+
+NEarticle12 <- tibble(NEarticle12)
+#View(NEarticle12)
+
+NEarticle12$NEarticle12 <- as.character(NEarticle12$NEarticle12)
+
+NEarticle12 <- NEarticle12 %>%
+  unnest_tokens(word, NEarticle12)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(NEarticle12)
+
+ggplot(
+  data = NEarticle12[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+NEarticle12_affin <- NEarticle12 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+NEarticle12_nrc <- NEarticle12 %>%
+  inner_join(get_sentiments("nrc"))
+
+NEarticle12_bing <- NEarticle12 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(NEarticle12_bing$sentiment) #much more positive
+
+table(NEarticle12_nrc$sentiment)
+
+#View(NEarticle12_affin)
+
+ggplot(data = NEarticle12_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 12 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(NEarticle12[1:50,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article: National Review
+Newspaper: Trump the Climate-Slayer
+
+```{r}
+NEarticle13 <- read_lines("07_text_mining/Trump the Climate-Slayer.txt")
+
+NEarticle13 <- tibble(NEarticle13)
+#View(NEarticle13)
+
+NEarticle13$NEarticle13 <- as.character(NEarticle13$NEarticle13)
+
+NEarticle13 <- NEarticle13 %>%
+  unnest_tokens(word, NEarticle13)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(NEarticle13)
+
+ggplot(
+  data = NEarticle13[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+NEarticle13_affin <- NEarticle13 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+NEarticle13_nrc <- NEarticle13 %>%
+  inner_join(get_sentiments("nrc"))
+
+NEarticle13_bing <- NEarticle13 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(NEarticle13_bing$sentiment) #much more positive
+
+table(NEarticle13_nrc$sentiment)
+
+#View(NEarticle13_affin)
+
+ggplot(data = NEarticle13_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 13 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(NEarticle13[1:50,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article: White House targeting economic risks from climate change
+Newspaper: The Associated Press
+
+```{r}
+NEarticle14 <- read_lines("07_text_mining/White House targeting economic risks from climate change.txt")
+
+NEarticle14 <- tibble(NEarticle14)
+#View(NEarticle14)
+
+NEarticle14$NEarticle14 <- as.character(NEarticle14$NEarticle14)
+
+NEarticle14 <- NEarticle14 %>%
+  unnest_tokens(word, NEarticle14)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(NEarticle14)
+
+ggplot(
+  data = NEarticle14[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+NEarticle14_affin <- NEarticle14 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+NEarticle14_nrc <- NEarticle14 %>%
+  inner_join(get_sentiments("nrc"))
+
+NEarticle14_bing <- NEarticle14 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(NEarticle14_bing$sentiment) #much more positive
+
+table(NEarticle14_nrc$sentiment)
+
+#View(NEarticle14_affin)
+
+ggplot(data = NEarticle14_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 14 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(NEarticle14[1:50,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article: Teaching About Climate Change With The New York Times
+Newspaper: The New York Times Blog
+
+```{r}
+NEarticle15 <- read_lines("07_text_mining/Teaching.txt")
+
+NEarticle15 <- tibble(NEarticle15)
+#View(NEarticle15)
+
+NEarticle15$NEarticle15 <- as.character(NEarticle15$NEarticle15)
+
+NEarticle15 <- NEarticle15 %>%
+  unnest_tokens(word, NEarticle15)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(NEarticle15)
+
+ggplot(
+  data = NEarticle15[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+NEarticle15_affin <- NEarticle15 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+NEarticle15_nrc <- NEarticle15 %>%
+  inner_join(get_sentiments("nrc"))
+
+NEarticle15_bing <- NEarticle15 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(NEarticle15_bing$sentiment) #much more positive
+
+table(NEarticle15_nrc$sentiment)
+
+#View(NEarticle15_affin)
+
+ggplot(data = NEarticle15_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 15 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(NEarticle15[1:35,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+# All the articles in the Northeast region of the US
+```{r}
+NE_total <- read_lines("07_text_mining/NE_total.txt")
+
+NE_total <- tibble(NE_total)
+
+NE_total$NE_total <- as.character(NE_total$NE_total)
+
+NE_total <- NE_total %>%
+  unnest_tokens(word, NE_total)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(NE_total)
+
+ggplot(
+  data = NE_total[1:25,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+NE_total_affin <- NE_total %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+NE_total_nrc <- NE_total %>%
+  inner_join(get_sentiments("nrc"))
+
+NE_total_bing <- NE_total %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(NE_total_bing$sentiment) #much more positive
+
+table(NE_total_nrc$sentiment)
+
+ggplot(data = NE_total_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Northeast Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(NE_total[1:35,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+Here we are going to treat each of the articles as a document in a corpus and explore the relative importance of words to these articles as compared to the overall corpus. In this case, the corpus is the region in the US, which contains 15 articles from each region. In this case, the documents are the 15 individual articles. In this case, the tokens are the individual words. 
+tf-idf- importance of word in a document relative to whole corpus
+tf-idf- the higher the number, the higher importance it is to that document relative to the others
+```{r}
+#need to the raw data again
+NEarticle1_raw <- as.tibble(read_lines("07_text_mining/Adapt-or-Die.txt"))
+NEarticle2_raw <- as.tibble(read_lines("07_text_mining/Blame Climate Change for the Weather.txt"))
+NEarticle3_raw <- as.tibble(read_lines("07_text_mining/Destroying-My-Country.txt"))
+NEarticle4_raw <- as.tibble(read_lines("07_text_mining/England must.txt"))
+NEarticle5_raw <- as.tibble(read_lines("07_text_mining/Fossil-Fuel-Peak.txt"))
+NEarticle6_raw <- as.tibble(read_lines("07_text_mining/Google bans ads.txt"))
+NEarticle7_raw <- as.tibble(read_lines("07_text_mining/How the Animal World Is Adapting to Climate Change_ Non.txt"))
+NEarticle8_raw <- as.tibble(read_lines("07_text_mining/Looking out for number 2_ Farmer has a manure solution.txt"))
+NEarticle9_raw <- as.tibble(read_lines("07_text_mining/Potsdam town and village recognized for climate change.txt"))
+NEarticle10_raw <- as.tibble(read_lines("07_text_mining/Share-the-Cost-of-Climate-Change.txt"))
+NEarticle11_raw <- as.tibble(read_lines("07_text_mining/Small islands.txt"))
+NEarticle12_raw <- as.tibble(read_lines("07_text_mining/The Latest_ EPA.txt"))
+NEarticle13_raw <- as.tibble(read_lines("07_text_mining/Trump the Climate-Slayer.txt"))
+NEarticle14_raw <- as.tibble(read_lines("07_text_mining/White House targeting economic risks from climate change.txt"))
+NEarticle15_raw <- as.tibble(read_lines("07_text_mining/Teaching.txt"))
+
+data_prep <- function(x,y,z){
+  i <- as_tibble(t(x))
+  ii <- unite(i,"text",y:z,remove = TRUE,sep = "") #the function merges everything into one cell (box)
+}
+
+NEarticle1_bag <- data_prep(NEarticle1_raw,'V1','V18')
+NEarticle2_bag <- data_prep(NEarticle2_raw,'V1','V16')
+NEarticle3_bag <- data_prep(NEarticle3_raw,'V1','V26')
+NEarticle4_bag <- data_prep(NEarticle4_raw,'V1','V9')
+NEarticle5_bag <- data_prep(NEarticle5_raw,'V1','V20')
+NEarticle6_bag <- data_prep(NEarticle6_raw,'V1','V10')
+NEarticle7_bag <- data_prep(NEarticle7_raw,'V1','V16')
+NEarticle8_bag <- data_prep(NEarticle8_raw,'V1','V27')
+NEarticle9_bag <- data_prep(NEarticle9_raw,'V1','V13')
+NEarticle10_bag <- data_prep(NEarticle10_raw,'V1','V13')
+NEarticle11_bag <- data_prep(NEarticle11_raw,'V1','V30')
+NEarticle12_bag <- data_prep(NEarticle12_raw,'V1','V159')
+NEarticle13_bag <- data_prep(NEarticle13_raw,'V1','V23')
+NEarticle14_bag <- data_prep(NEarticle14_raw,'V1','V15')
+NEarticle15_bag <- data_prep(NEarticle15_raw,'V1','V21')
+
+NE_articles <- c("Northeast Article 1", "Northeast Article 2", "Northeast Article 3", "Northeast Article 4", "Northeast Article 5", "Northeast Article 6", "Northeast Article 7", "Northeast Article 8", "Northeast Article 9", "Northeast Article 10", "Northeast Article 11", "Northeast Article 12", "Northeast Article 13", "Northeast Article 14", "Northeast Article 15")
+
+
+NE_tf_idf_text <- tibble(NE_articles,text=t(tibble(NEarticle1_bag, NEarticle2_bag, NEarticle3_bag, NEarticle4_bag, NEarticle5_bag, NEarticle6_bag, NEarticle7_bag, NEarticle8_bag, NEarticle9_bag, NEarticle10_bag, NEarticle11_bag, NEarticle12_bag, NEarticle13_bag, NEarticle14_bag, NEarticle15_bag, .name_repair = "universal")))
+
+View(NE_tf_idf_text)
+
+NE_word_count <- NE_tf_idf_text %>%
+  unnest_tokens(word, text) %>%
+  count(NE_articles, word, sort = TRUE)
+view(NE_word_count)
+
+NE_total_words <- NE_word_count %>%
+  group_by(NE_articles) %>%
+  summarize(total = sum(n))
+(NE_total_words)
+
+NE_inag_words <- left_join(NE_word_count, NE_total_words)
+(NE_inag_words)
+
+NE_inag_words <- NE_inag_words %>%
+  bind_tf_idf(word, NE_articles, n) #n represents frequency counts
+view(NE_inag_words)
+
+#in inag_words, the words like 'the' and 'and' and other common words have an tf_idf of 0 because they are insignificant and pop up alot.
+#sort by tf_idf to see most significant words
+#tf*idf = tf_idf
+
+```
+
+## Reflection about the Northeastern Region: 
+The 15 articles come from a variety of different newspapers from the region in order to gain a better understanding of how the region views the issue of climate change. I collected articles from the newspapers, The New York Times, The Associated Press, The Philadelphia Daily News, and the National Review. In the Northeast region, common terms are 'world', 'countries', and 'global.' This shows me that they are thinking about the big picture when considering this topic. Other terms that can be grouped together are 'emissions', 'warming', and 'damage.' This shows that they view the issue factually. There are more negative terms than positive. 
+
+# Southeast Region of the US
+
+## Article: Teaching About Climate Change With The New York Times
+Newspaper: The New York Times Blog
+
+```{r}
+SEarticle16 <- read_lines("07_text_mining/3_myths.txt")
+
+SEarticle16 <- tibble(SEarticle16)
+#View(SEarticle16)
+
+SEarticle16$SEarticle16 <- as.character(SEarticle16$SEarticle16)
+
+SEarticle16 <- SEarticle16 %>%
+  unnest_tokens(word, SEarticle16)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(SEarticle16)
+
+ggplot(
+  data = SEarticle16[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+SEarticle16_affin <- SEarticle16 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+SEarticle16_nrc <- SEarticle16 %>%
+  inner_join(get_sentiments("nrc"))
+
+SEarticle16_bing <- SEarticle16 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(SEarticle16_bing$sentiment) #much more positive
+
+table(SEarticle16_nrc$sentiment)
+
+#View(SEarticle16_affin)
+
+ggplot(data = SEarticle16_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 16 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(SEarticle16[1:35,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article: On climate change, are we too stupid to live?; Columnist Leonard Pitts Jr. weighs in on how climate change, COVID-19 and the Jan. 6 insurrection are related.
+Newspaper: Tampa Bay Times
+
+```{r}
+SEarticle17 <- read_lines("07_text_mining/are we too stupid to live.txt")
+
+SEarticle17 <- tibble(SEarticle17)
+#View(SEarticle17)
+
+SEarticle17$SEarticle17 <- as.character(SEarticle17$SEarticle17)
+
+SEarticle17 <- SEarticle17 %>%
+  unnest_tokens(word, SEarticle17)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(SEarticle17)
+
+ggplot(
+  data = SEarticle17[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+SEarticle17_affin <- SEarticle17 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+SEarticle17_nrc <- SEarticle17 %>%
+  inner_join(get_sentiments("nrc"))
+
+SEarticle17_bing <- SEarticle17 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(SEarticle17_bing$sentiment) #much more positive
+
+table(SEarticle17_nrc$sentiment)
+
+#View(SEarticle17_affin)
+
+ggplot(data = SEarticle17_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 17 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(SEarticle17[1:35,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article: Climate activist Nakate seeks immediate action from world leaders in Glasgow; Nakate is among 400 activists invited to a three-day Youth4Climate meeting that will draft a document for the U.N.'s 26th Climate Change Conference.
+Newspaper: Tampa Bay Times
+
+```{r}
+SEarticle18 <- read_lines("07_text_mining/Climate activist Nakate.txt")
+
+SEarticle18 <- tibble(SEarticle18)
+#View(SEarticle18)
+
+SEarticle18$SEarticle18 <- as.character(SEarticle18$SEarticle18)
+
+SEarticle18 <- SEarticle18 %>%
+  unnest_tokens(word, SEarticle18)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(SEarticle18)
+
+ggplot(
+  data = SEarticle18[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+SEarticle18_affin <- SEarticle18 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+SEarticle18_nrc <- SEarticle18 %>%
+  inner_join(get_sentiments("nrc"))
+
+SEarticle18_bing <- SEarticle18 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(SEarticle18_bing$sentiment) #much more positive
+
+table(SEarticle18_nrc$sentiment)
+
+#View(SEarticle18_affin)
+
+ggplot(data = SEarticle18_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 18 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(SEarticle18[1:35,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article:	CLIMATE CHANGE ENTERS DEBATE
+Newspaper:	Tampa Bay Times
+
+```{r}
+SEarticle19 <- read_lines("07_text_mining/CLIMATE-CHANGE-ENTERS-DEBATE.txt")
+
+SEarticle19 <- tibble(SEarticle19)
+#View(SEarticle19)
+
+SEarticle19$SEarticle19 <- as.character(SEarticle19$SEarticle19)
+
+SEarticle19 <- SEarticle19 %>%
+  unnest_tokens(word, SEarticle19)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(SEarticle19)
+
+ggplot(
+  data = SEarticle19[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+SEarticle19_affin <- SEarticle19 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+SEarticle19_nrc <- SEarticle19 %>%
+  inner_join(get_sentiments("nrc"))
+
+SEarticle19_bing <- SEarticle19 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(SEarticle19_bing$sentiment) #much more positive
+
+table(SEarticle19_nrc$sentiment)
+
+#View(SEarticle19_affin)
+
+ggplot(data = SEarticle19_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 19 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(SEarticle19[1:35,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article: As extreme weather increases, climate misinformation adapts; Climate denialism isn't the only problem. Misinformation merchants are trying to diminish the impact of climate change on extreme weather events.
+Newspaper: Tampa Bay Times
+
+```{r}
+SEarticle20 <- read_lines("07_text_mining/climate-misinformation.txt")
+
+SEarticle20 <- tibble(SEarticle20)
+#View(SEarticle20)
+
+SEarticle20$SEarticle20 <- as.character(SEarticle20$SEarticle20)
+
+SEarticle20 <- SEarticle20 %>%
+  unnest_tokens(word, SEarticle20)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(SEarticle20)
+
+ggplot(
+  data = SEarticle20[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+SEarticle20_affin <- SEarticle20 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+SEarticle20_nrc <- SEarticle20 %>%
+  inner_join(get_sentiments("nrc"))
+
+SEarticle20_bing <- SEarticle20 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(SEarticle20_bing$sentiment) #much more positive
+
+table(SEarticle20_nrc$sentiment)
+
+#View(SEarticle20_affin)
+
+ggplot(data = SEarticle20_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 20 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(SEarticle20[1:35,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article: Florida Legislature can do even more to make us resilient to climate change and sea level rise | Column; Making investments in protecting our "blue economy" now will pay dividends long into the future.
+Newspaper: Tampa Bay Times
+
+```{r}
+SEarticle21 <- read_lines("07_text_mining/Florida Legislature.txt")
+
+SEarticle21 <- tibble(SEarticle21)
+#View(SEarticle21)
+
+SEarticle21$SEarticle21 <- as.character(SEarticle21$SEarticle21)
+
+SEarticle21 <- SEarticle21 %>%
+  unnest_tokens(word, SEarticle21)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(SEarticle21)
+
+ggplot(
+  data = SEarticle21[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+SEarticle21_affin <- SEarticle21 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+SEarticle21_nrc <- SEarticle21 %>%
+  inner_join(get_sentiments("nrc"))
+
+SEarticle21_bing <- SEarticle21 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(SEarticle21_bing$sentiment) #much more positive
+
+table(SEarticle21_nrc$sentiment)
+
+#View(SEarticle21_affin)
+
+ggplot(data = SEarticle21_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 21 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(SEarticle21[1:35,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article: Most Florida voters worry about climate change. Will Trump talk about it?
+Newspaper: Tampa Bay Times
+
+```{r}
+SEarticle22 <- read_lines("07_text_mining/Florida-voters-worry.txt")
+
+SEarticle22 <- tibble(SEarticle22)
+#View(SEarticle22)
+
+SEarticle22$SEarticle22 <- as.character(SEarticle22$SEarticle22)
+
+SEarticle22 <- SEarticle22 %>%
+  unnest_tokens(word, SEarticle22)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(SEarticle22)
+
+ggplot(
+  data = SEarticle22[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+SEarticle22_affin <- SEarticle22 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+SEarticle22_nrc <- SEarticle22 %>%
+  inner_join(get_sentiments("nrc"))
+
+SEarticle22_bing <- SEarticle22 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(SEarticle22_bing$sentiment) #much more positive
+
+table(SEarticle22_nrc$sentiment)
+
+#View(SEarticle22_affin)
+
+ggplot(data = SEarticle22_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 22 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(SEarticle22[1:35,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article: Experts say climate change can make hurricanes more intense, not cause them; PolitiFact | Experts have not resorted to blaming recent hurricanes on climate change.
+Newspaper: Tampa Bay Times
+
+```{r}
+SEarticle23 <- read_lines("07_text_mining/hurricanes.txt")
+
+SEarticle23 <- tibble(SEarticle23)
+#View(SEarticle23)
+
+SEarticle23$SEarticle23 <- as.character(SEarticle23$SEarticle23)
+
+SEarticle23 <- SEarticle23 %>%
+  unnest_tokens(word, SEarticle23)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(SEarticle23)
+
+ggplot(
+  data = SEarticle23[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+SEarticle23_affin <- SEarticle23 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+SEarticle23_nrc <- SEarticle23 %>%
+  inner_join(get_sentiments("nrc"))
+
+SEarticle23_bing <- SEarticle23 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(SEarticle23_bing$sentiment) #much more positive
+
+table(SEarticle23_nrc$sentiment)
+
+#View(SEarticle23_affin)
+
+ggplot(data = SEarticle23_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 23 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(SEarticle23[1:35,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article:	Climate change inaction jeopardizes Energy Department facilities, says new report
+Newspaper:	Aiken Standard (South Carolina)
+
+```{r}
+SEarticle24 <- read_lines("07_text_mining/jeopardizes-Energy-Department.txt")
+
+SEarticle24 <- tibble(SEarticle24)
+#View(SEarticle24)
+
+SEarticle24$SEarticle24 <- as.character(SEarticle24$SEarticle24)
+
+SEarticle24 <- SEarticle24 %>%
+  unnest_tokens(word, SEarticle24)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(SEarticle24)
+
+ggplot(
+  data = SEarticle24[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+SEarticle24_affin <- SEarticle24 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+SEarticle24_nrc <- SEarticle24 %>%
+  inner_join(get_sentiments("nrc"))
+
+SEarticle24_bing <- SEarticle24 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(SEarticle24_bing$sentiment) #much more positive
+
+table(SEarticle24_nrc$sentiment)
+
+#View(SEarticle24_affin)
+
+ggplot(data = SEarticle24_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 24 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(SEarticle24[1:35,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article:	Climate change is a national security threat and economic opportunity for Florida | Column; No American state has more to lose from inaction on climate change than Florida, writes a Florida congresswoman.
+Newspaper:	Tampa Bay Times
+
+```{r}
+SEarticle25 <- read_lines("07_text_mining/national security threat.txt")
+
+SEarticle25 <- tibble(SEarticle25)
+#View(SEarticle25)
+
+SEarticle25$SEarticle25 <- as.character(SEarticle25$SEarticle25)
+
+SEarticle25 <- SEarticle25 %>%
+  unnest_tokens(word, SEarticle25)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(SEarticle25)
+
+ggplot(
+  data = SEarticle25[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+SEarticle25_affin <- SEarticle25 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+SEarticle25_nrc <- SEarticle25 %>%
+  inner_join(get_sentiments("nrc"))
+
+SEarticle25_bing <- SEarticle25 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(SEarticle25_bing$sentiment) #much more positive
+
+table(SEarticle25_nrc$sentiment)
+
+#View(SEarticle25_affin)
+
+ggplot(data = SEarticle25_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 25 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(SEarticle25[1:35,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article: Here's how climate change could make future Red Tide blooms worse; From warm water to rainfall, there are many ways a changing climate could alter Florida's blooms.
+Newspaper: Tampa Bay Times
+
+```{r}
+SEarticle26 <- read_lines("07_text_mining/Red Tide.txt")
+
+SEarticle26 <- tibble(SEarticle26)
+#View(SEarticle26)
+
+SEarticle26$SEarticle26 <- as.character(SEarticle26$SEarticle26)
+
+SEarticle26 <- SEarticle26 %>%
+  unnest_tokens(word, SEarticle26)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(SEarticle26)
+
+ggplot(
+  data = SEarticle26[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+SEarticle26_affin <- SEarticle26 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+SEarticle26_nrc <- SEarticle26 %>%
+  inner_join(get_sentiments("nrc"))
+
+SEarticle26_bing <- SEarticle26 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(SEarticle26_bing$sentiment) #much more positive
+
+table(SEarticle26_nrc$sentiment)
+
+#View(SEarticle26_affin)
+
+ggplot(data = SEarticle26_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 26 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(SEarticle26[1:35,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article: Reducing Racism and Global Climate Change in One Step
+Newspaper: American Institute for Economic Research
+
+```{r}
+SEarticle27 <- read_lines("07_text_mining/Reducing Racism.txt")
+
+SEarticle27 <- tibble(SEarticle27)
+#View(SEarticle27)
+
+SEarticle27$SEarticle27 <- as.character(SEarticle27$SEarticle27)
+
+SEarticle27 <- SEarticle27 %>%
+  unnest_tokens(word, SEarticle27)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(SEarticle27)
+
+ggplot(
+  data = SEarticle27[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+SEarticle27_affin <- SEarticle27 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+SEarticle27_nrc <- SEarticle27 %>%
+  inner_join(get_sentiments("nrc"))
+
+SEarticle27_bing <- SEarticle27 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(SEarticle27_bing$sentiment) #much more positive
+
+table(SEarticle27_nrc$sentiment)
+
+#View(SEarticle27_affin)
+
+ggplot(data = SEarticle27_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 27 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(SEarticle27[1:35,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article: Study: Northwest heat wave impossible without climate change; An international team of 27 scientists calculated that climate change increased chances of the extreme heat occurring by at least 150 times, but likely much more.
+Newspaper: Tampa Bay Times
+
+```{r}
+SEarticle28 <- read_lines("07_text_mining/Study_ Northwest.txt")
+
+SEarticle28 <- tibble(SEarticle28)
+#View(SEarticle28)
+
+SEarticle28$SEarticle28 <- as.character(SEarticle28$SEarticle28)
+
+SEarticle28 <- SEarticle28 %>%
+  unnest_tokens(word, SEarticle28)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(SEarticle28)
+
+ggplot(
+  data = SEarticle28[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+SEarticle28_affin <- SEarticle28 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+SEarticle28_nrc <- SEarticle28 %>%
+  inner_join(get_sentiments("nrc"))
+
+SEarticle28_bing <- SEarticle28 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(SEarticle28_bing$sentiment) #much more positive
+
+table(SEarticle28_nrc$sentiment)
+
+#View(SEarticle28_affin)
+
+ggplot(data = SEarticle28_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 28 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(SEarticle28[1:35,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article: WHAT DONALD TRUMP SAID ABOUT THE CHINESE INVENTING THE 'HOAX' OF CLIMATE CHANGE
+Newspaper: Tampa Bay Times
+
+```{r}
+SEarticle29 <- read_lines("07_text_mining/TRUMP-CHINESE.txt")
+
+SEarticle29 <- tibble(SEarticle29)
+#View(SEarticle29)
+
+SEarticle29$SEarticle29 <- as.character(SEarticle29$SEarticle29)
+
+SEarticle29 <- SEarticle29 %>%
+  unnest_tokens(word, SEarticle29)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(SEarticle29)
+
+ggplot(
+  data = SEarticle29[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+SEarticle29_affin <- SEarticle29 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+SEarticle29_nrc <- SEarticle29 %>%
+  inner_join(get_sentiments("nrc"))
+
+SEarticle29_bing <- SEarticle29 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(SEarticle29_bing$sentiment) #much more positive
+
+table(SEarticle29_nrc$sentiment)
+
+#View(SEarticle29_affin)
+
+ggplot(data = SEarticle29_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 29 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(SEarticle29[1:35,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+## Article: What the Climate Change Models Actually Say
+Newspaper: Foundation for Economic Education
+
+```{r}
+SEarticle30 <- read_lines("07_text_mining/What the Climate Change Models Actually Say.txt")
+
+SEarticle30 <- tibble(SEarticle30)
+#View(SEarticle30)
+
+SEarticle30$SEarticle30 <- as.character(SEarticle30$SEarticle30)
+
+SEarticle30 <- SEarticle30 %>%
+  unnest_tokens(word, SEarticle30)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(SEarticle30)
+
+ggplot(
+  data = SEarticle30[1:20,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+SEarticle30_affin <- SEarticle30 %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+SEarticle30_nrc <- SEarticle30 %>%
+  inner_join(get_sentiments("nrc"))
+
+SEarticle30_bing <- SEarticle30 %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(SEarticle30_bing$sentiment) #much more positive
+
+table(SEarticle30_nrc$sentiment)
+
+#View(SEarticle30_affin)
+
+ggplot(data = SEarticle30_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Article 30 Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(SEarticle30[1:35,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+# All the articles in the Southeast region of the US
+```{r}
+SE_total <- read_lines("07_text_mining/SE_total.txt")
+
+SE_total <- tibble(SE_total)
+
+SE_total$SE_total <- as.character(SE_total$SE_total)
+
+SE_total <- SE_total %>%
+  unnest_tokens(word, SE_total)%>%
+  anti_join(stop_words)%>% 
+  count(word, sort=TRUE)
+
+#View(SE_total)
+
+ggplot(
+  data = SE_total[1:25,],
+  aes(x = fct_reorder(word,n),
+      y = n)
+  ) + 
+  geom_col() + 
+  coord_flip()+
+  theme_light()
+  
+#evaluating words for their connotation
+SE_total_affin <- SE_total %>%
+  inner_join(get_sentiments("afinn"))#using a inner join to match words and add the sentiment variable
+
+SE_total_nrc <- SE_total %>%
+  inner_join(get_sentiments("nrc"))
+
+SE_total_bing <- SE_total %>%
+  inner_join(get_sentiments("bing"))
+
+#We can just do some tabling to see the differences in bing and nrc, seems like Kennedy's speech at least first glanced was much more balanced in terms of negative/positive sentiment
+table(SE_total_bing$sentiment) #much more positive
+
+table(SE_total_nrc$sentiment)
+
+ggplot(data = SE_total_affin, 
+       aes(x=value)
+        )+
+  geom_histogram()+
+  ggtitle("Southeast Sentiment Range")+
+  theme_minimal()
+
+#Could also do simple word clouds as we see
+#below uses the ggwordcloud package
+
+set.seed(42)
+ggplot(SE_total[1:35,], aes(label = word, size = n)
+       ) +
+  geom_text_wordcloud() +
+  theme_minimal()
+```
+
+
+```{r}
+#need to the raw data again
+SEarticle16_raw <- as.tibble(read_lines("07_text_mining/3_myths.txt"))
+SEarticle17_raw <- as.tibble(read_lines("07_text_mining/are we too stupid to live.txt"))
+SEarticle18_raw <- as.tibble(read_lines("07_text_mining/Climate activist Nakate.txt"))
+SEarticle19_raw <- as.tibble(read_lines("07_text_mining/CLIMATE-CHANGE-ENTERS-DEBATE.txt"))
+SEarticle20_raw <- as.tibble(read_lines("07_text_mining/climate-misinformation.txt"))
+SEarticle21_raw <- as.tibble(read_lines("07_text_mining/Florida Legislature.txt"))
+SEarticle22_raw <- as.tibble(read_lines("07_text_mining/Florida-voters-worry.txt"))
+SEarticle23_raw <- as.tibble(read_lines("07_text_mining/hurricanes.txt"))
+SEarticle24_raw <- as.tibble(read_lines("07_text_mining/jeopardizes-Energy-Department.txt"))
+SEarticle25_raw <- as.tibble(read_lines("07_text_mining/national security threat.txt"))
+SEarticle26_raw <- as.tibble(read_lines("07_text_mining/Red Tide.txt"))
+SEarticle27_raw <- as.tibble(read_lines("07_text_mining/Reducing Racism.txt"))
+SEarticle28_raw <- as.tibble(read_lines("07_text_mining/Study_ Northwest.txt"))
+SEarticle29_raw <- as.tibble(read_lines("07_text_mining/TRUMP-CHINESE.txt"))
+SEarticle30_raw <- as.tibble(read_lines("07_text_mining/What the Climate Change Models Actually Say.txt"))
+
+data_prep <- function(x,y,z){
+  i <- as_tibble(t(x))
+  ii <- unite(i,"text",y:z,remove = TRUE,sep = "") #the function merges everything into one cell (box)
+}
+
+SEarticle16_bag <- data_prep(SEarticle16_raw,'V1','V48')
+SEarticle17_bag <- data_prep(SEarticle17_raw,'V1','V18')
+SEarticle18_bag <- data_prep(SEarticle18_raw,'V1','V21')
+SEarticle19_bag <- data_prep(SEarticle19_raw,'V1','V47')
+SEarticle20_bag <- data_prep(SEarticle20_raw,'V1','V25')
+SEarticle21_bag <- data_prep(SEarticle21_raw,'V1','V12')
+SEarticle22_bag <- data_prep(SEarticle22_raw,'V1','V32')
+SEarticle23_bag <- data_prep(SEarticle23_raw,'V1','V26')
+SEarticle24_bag <- data_prep(SEarticle24_raw,'V1','V16')
+SEarticle25_bag <- data_prep(SEarticle25_raw,'V1','V18')
+SEarticle26_bag <- data_prep(SEarticle26_raw,'V1','V25')
+SEarticle27_bag <- data_prep(SEarticle27_raw,'V1','V26')
+SEarticle28_bag <- data_prep(SEarticle28_raw,'V1','V27')
+SEarticle29_bag <- data_prep(SEarticle29_raw,'V1','V26')
+SEarticle30_bag <- data_prep(SEarticle30_raw,'V1','V41')
+
+SEarticles <- c("Southeast Article 1", "Southeast Article 2", "Southeast Article 3", "Southeast Article 4", "Southeast Article 5", "Southeast Article 6", "Southeast Article 7", "Southeast Article 8", "Southeast Article 9", "Southeast Article 10", "Southeast Article 11", "Southeast Article 12", "Southeast Article 13", "Southeast Article 14", "Southeast Article 15")
+
+
+SE_tf_idf_text <- tibble(SEarticles,text=t(tibble(SEarticle16_bag, SEarticle17_bag, SEarticle18_bag, SEarticle19_bag, SEarticle20_bag, SEarticle21_bag, SEarticle22_bag, SEarticle23_bag, SEarticle24_bag, SEarticle25_bag, SEarticle26_bag, SEarticle27_bag, SEarticle28_bag, SEarticle29_bag, SEarticle30_bag, .name_repair = "universal")))
+
+View(SE_tf_idf_text)
+
+SE_word_count <- SE_tf_idf_text %>%
+  unnest_tokens(word, text) %>%
+  count(SEarticles, word, sort = TRUE)
+view(SE_word_count)
+
+SE_total_words <- SE_word_count %>%
+  group_by(SEarticles) %>%
+  summarize(total = sum(n))
+(SE_total_words)
+
+SE_inag_words <- left_join(SE_word_count, SE_total_words)
+(SE_inag_words)
+
+SE_inag_words <- SE_inag_words %>%
+  bind_tf_idf(word, SEarticles, n) #n represents frequency counts
+view(SE_inag_words)
+
+#in inag_words, the words like 'the' and 'and' and other common words have an tf_idf of 0 because they are insignificant and pop up alot.
+#sort by tf_idf to see most significant words
+#tf*idf = tf_idf
+```
+
+## Reflection about the Southeast Region: 
+The 15 articles come from a variety of different newspapers from the region in order to gain a better understanding of how the region views the issue of climate change. I collected articles from the newspapers, Tampa Bay Times, Aiken Standard, and Foundation for Economic Education. In the SE region, common terms are 'national', 'university', 'Florida', and 'Americans' This shows me that they are thinking about the topic in a national scale, which is smaller compared to the global scale. Other terms that can be grouped together are 'study', 'energy', 'misinformation', and 'science' This shows that they view the issue factually and use research to support findings. There are more negative terms than positive. 
