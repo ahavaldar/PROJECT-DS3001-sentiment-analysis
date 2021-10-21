@@ -1,0 +1,195 @@
+---
+title: "Group_tidytext_Final"
+author: "Akhil Havaldar"
+date: "10/20/2021"
+output:
+  html_document:
+    toc: TRUE
+    theme: cerulean
+    toc_float: TRUE
+editor_options: 
+  chunk_output_type: console
+---
+```{r, include=FALSE}
+library(tidyverse)
+library(tidytext)
+library(ggwordcloud)
+library(readr)
+library(gutenbergr)
+library(textdata)
+```
+
+
+### Pacific Region
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+tfidfpacific <- read_csv("tfidfpacific.csv")
+(tfidfpacific)
+```
+
+#### LA Times
+<img src ="wordcloudswest/latimes_wordcloud.png" alt="photo" width="400"/>
+
+#### Alaska Dispatch News
+<img src ="wordcloudswest/alaska_wordcloud.png" alt="photo" width="400"/>
+
+#### The Spokesman-Review
+<img src ="wordcloudswest/washington_wordcloud.png" alt="photo" width="400"/>
+
+
+
+### Rocky Mountain Region
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+tfidfmtn <- read_csv("tfidfmtn.csv")
+(tfidfmtn)
+```
+
+#### Idaho Falls Post Register
+<img src ="wordcloudswest/idaho_wordcloud.png" alt="photo" width="400"/>
+
+#### The Salt Lake Tribune
+<img src ="wordcloudswest/utah_wordcloud.png" alt="photo" width="400"/>
+
+#### The Wyoming Tribune
+<img src ="wordcloudswest/wyoming_wordcloud.png" alt="photo" width="400"/>
+
+
+
+### Midwest Region
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+midwest_tfidf <- read_csv("Midwest_Wordcloud_tfidf/midwest_tfidf.csv")
+(midwest_tfidf)
+```
+
+#### Illinois
+<img src ="Midwest_Wordcloud_tfidf/illinois_wordcloud.png" alt="photo" width="400"/>
+
+#### Indiana
+<img src ="Midwest_Wordcloud_tfidf/indiana_wordcloud.png" alt="photo" width="400"/>
+
+#### Iowa
+<img src ="Midwest_Wordcloud_tfidf/iowa_wordcloud.png" alt="photo" width="400"/>
+
+#### Kansas
+<img src ="Midwest_Wordcloud_tfidf/kansas_wordcloud.png" alt="photo" width="400"/>
+
+#### Michigan 
+<img src ="Midwest_Wordcloud_tfidf/michigan1_wordcloud.png" alt="photo" width="400"/>
+<img src ="Midwest_Wordcloud_tfidf/michigan2_wordcloud.png" alt="photo" width="400"/>
+
+#### Minnesota
+<img src ="Midwest_Wordcloud_tfidf/minnesota_wordcloud.png" alt="photo" width="400"/>
+
+#### Missouri
+<img src ="Midwest_Wordcloud_tfidf/mo1_wordcloud.png" alt="photo" width="400"/>
+<img src ="Midwest_Wordcloud_tfidf/mo2_wordcloud.png" alt="photo" width="400"/>
+
+#### North Daktoa
+<img src ="Midwest_Wordcloud_tfidf/nd1_wordcloud.png" alt="photo" width="400"/>
+<img src ="Midwest_Wordcloud_tfidf/nd2_wordcloud.png" alt="photo" width="400"/>
+
+#### Nebraska
+<img src ="Midwest_Wordcloud_tfidf/nebraska_wordcloud.png" alt="photo" width="400"/>
+
+#### Ohio
+<img src ="Midwest_Wordcloud_tfidf/ohion_wordcloud.png" alt="photo" width="400"/>
+
+#### South Dakota
+<img src ="Midwest_Wordcloud_tfidf/sd_wordcloud.png" alt="photo" width="400"/>
+
+##### Wisconsin
+<img src ="Midwest_Wordcloud_tfidf/wisconsin_wordcloud.png" alt="photo" width="400"/>
+
+
+
+### Southwest Region
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+southwest_tfidf <- read_csv("Southwest_wordclouds_tfidf/southwest_tfidf.csv")
+(southwest_tfidf)
+```
+
+#### Arizona
+<img src ="Southwest_wordclouds_tfidf/arizona1_wordcloud.png" alt="photo" width="400"/>
+<img src ="Southwest_wordclouds_tfidf/arizona2_wordcloud.png" alt="photo" width="400"/>
+<img src ="Southwest_wordclouds_tfidf/arizona3_wordcloud.png" alt="photo" width="400"/>
+<img src ="Southwest_wordclouds_tfidf/arizona4_wordcloud.png" alt="photo" width="400"/>
+
+#### New Mexico
+<img src ="Southwest_wordclouds_tfidf/nm1_wordcloud.png" alt="photo" width="400"/>
+<img src ="Southwest_wordclouds_tfidf/nm2_wordcloud.png" alt="photo" width="400"/>
+<img src ="Southwest_wordclouds_tfidf/nm3_wordcloud.png" alt="photo" width="400"/>
+<img src ="Southwest_wordclouds_tfidf/nm4_wordcloud.png" alt="photo" width="400"/>
+
+#### Oklahoma
+<img src ="Southwest_wordclouds_tfidf/oklahoma1_wordcloud.png" alt="photo" width="400"/>
+<img src ="Southwest_wordclouds_tfidf/oklahoma2_wordcloud.png" alt="photo" width="400"/>
+<img src ="Southwest_wordclouds_tfidf/oklahoma3_wordcloud.png" alt="photo" width="400"/>
+<img src ="Southwest_wordclouds_tfidf/oklahoma4_wordcloud.png" alt="photo" width="400"/>
+
+#### Texas
+<img src ="Southwest_wordclouds_tfidf/texas1_wordcloud.png" alt="photo" width="400"/>
+<img src ="Southwest_wordclouds_tfidf/texas2_wordcloud.png" alt="photo" width="400"/>
+<img src ="Southwest_wordclouds_tfidf/texas3_wordcloud.png" alt="photo" width="400"/>
+<img src ="Southwest_wordclouds_tfidf/texas4_wordcloud.png" alt="photo" width="400"/>
+
+
+
+### Northeast Region
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+tfidf_northeast <- read_csv("tfidf_northeast.csv")
+(tfidf_northeast)
+```
+
+#### Northeast Wordclouds
+<img src ="NE wordclouds/1_NEwordcloud.png" alt="photo" width="400"/>
+<img src ="NE wordclouds/2_NEwordcloud.png" alt="photo" width="400"/>
+<img src ="NE wordclouds/3_NEwordcloud.png" alt="photo" width="400"/>
+<img src ="NE wordclouds/4_NEwordcloud.png" alt="photo" width="400"/>
+<img src ="NE wordclouds/5_NEwordcloud.png" alt="photo" width="400"/>
+<img src ="NE wordclouds/6_NEwordcloud.png" alt="photo" width="400"/>
+<img src ="NE wordclouds/7_NEwordcloud.png" alt="photo" width="400"/>
+<img src ="NE wordclouds/8_NEwordcloud.png" alt="photo" width="400"/>
+<img src ="NE wordclouds/9_NEwordcloud.png" alt="photo" width="400"/>
+<img src ="NE wordclouds/10_NEwordcloud.png" alt="photo" width="400"/>
+<img src ="NE wordclouds/11_NEwordcloud.png" alt="photo" width="400"/>
+<img src ="NE wordclouds/12_NEwordcloud.png" alt="photo" width="400"/>
+<img src ="NE wordclouds/13_NEwordcloud.png" alt="photo" width="400"/>
+<img src ="NE wordclouds/14_NEwordcloud.png" alt="photo" width="400"/>
+<img src ="NE wordclouds/15_NEwordcloud.png" alt="photo" width="400"/>
+
+
+
+### Southeast Region
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+tfidf_southeast <- read_csv("tfidf_southeast.csv")
+(tfidf_southeast)
+```
+
+#### Southeast Wordclouds
+<img src ="SE wordclouds/16_SEwordcloud.png" alt="photo" width="400"/>
+<img src ="SE wordclouds/17_SEwordcloud.png" alt="photo" width="400"/>
+<img src ="SE wordclouds/18_SEwordcloud.png" alt="photo" width="400"/>
+<img src ="SE wordclouds/19_SEwordcloud.png" alt="photo" width="400"/>
+<img src ="SE wordclouds/20_SEwordcloud.png" alt="photo" width="400"/>
+<img src ="SE wordclouds/21_SEwordcloud.png" alt="photo" width="400"/>
+<img src ="SE wordclouds/22_SEwordcloud.png" alt="photo" width="400"/>
+<img src ="SE wordclouds/23_SEwordcloud.png" alt="photo" width="400"/>
+<img src ="SE wordclouds/24_SEwordcloud.png" alt="photo" width="400"/>
+<img src ="SE wordclouds/25_SEwordcloud.png" alt="photo" width="400"/>
+<img src ="SE wordclouds/26_SEwordcloud.png" alt="photo" width="400"/>
+<img src ="SE wordclouds/27_SEwordcloud.png" alt="photo" width="400"/>
+<img src ="SE wordclouds/28_SEwordcloud.png" alt="photo" width="400"/>
+<img src ="SE wordclouds/29_SEwordcloud.png" alt="photo" width="400"/>
+<img src ="SE wordclouds/30_SEwordcloud.png" alt="photo" width="400"/>
+
+
+### Final Analysis
+  We found that almost all of the articles we chose had more negative words than positive when comparing the BING sentiment values. This is unsurprising, but where we see differences in region is the words that cause these negative values. For example, the word “misinformation” appeared with high frequency in the south region, compared to words like “emission” or “damage” from other regions across the country. We think this is an interesting difference between what different regions in the US might think the problem with climate change is. The south region had articles which seemed to think the problem is overreaction, misinformation, and government control. The pacific region had articles very fearful of the effects of climate change, as did the midwest region with “floods” and other extreme weather being high frequency words. The Rocky Mountain region was the only region with an even distribution of negative and positive valued words. However we did not think this was too surprising, given the political affiliation of states the newspapers were pulled from - Utah, Wyoming, and Idaho.
+
+
+  There was also an interesting difference between regions in terms of the scale of climate change. For example, articles pulled from the south region had words like “Americans” and “national”, where the articles from the northeast region had words such as “world”, “countries”, and “global”. High frequency words from the midwest and pacific regions also mentioned words of government and politics, but nothing specifically global. We thought it was interesting that only one  article clearly conveyed a concern for the rest of the world, when climate change has been established as a global issue. 
+
+
+  Another interesting difference between regions we found was whether regions had a stronger correlation with problems or solutions. Articles pulled from the southwest region had high frequency words like “energy” and “oil” and “emissions”, compared to “education” and “change” from the midwest articles. This seems to convey the idea that the midwest was more concerned for solutions to the existing effects of climate change, whereas the south region could be more focused on identifying the roots of the problem.
+  
+
+  Overall, we think we have a general sense of feelings towards climate change over the different regions of the US. However, for future research, we think it would be a good idea to collect articles from every state, and not only use articles that came from big newspapers. We think we might see more of people’s true opinions on climate change if we do not primarily focus on articles coming from bigger cities. 
